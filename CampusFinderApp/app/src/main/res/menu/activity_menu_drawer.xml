@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_outdoor_map"
+            android:icon="@drawable/ic_menu_outdoor_map"
+            android:title="@string/menu_outdoor_map" />
+        <item
+            android:id="@+id/nav_indoor_map"
+            android:icon="@drawable/ic_menu_indoor_map"
+            android:title="@string/menu_indoor_map" />
+        <item
+            android:id="@+id/nav_saved_places"
+            android:icon="@drawable/ic_menu_saved_places"
+            android:title="@string/menu_saved_places" />
+        <item
+            android:id="@+id/nav_manage"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="@string/action_settings" />
+        <item
+            android:id="@+id/nav_log_out"
+            android:icon="@drawable/ic_menu_log_out"
+            android:title="@string/menu_log_out" />
+    </group>
+
+    <!--
+    <item android:title="Communicate">
+        <menu>
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_menu_share"
+                android:title="Share" />
+            <item
+                android:id="@+id/nav_send"
+                android:icon="@drawable/ic_menu_send"
+                android:title="Send" />
+        </menu>
+    </item>
+    -->
+
+</menu>
