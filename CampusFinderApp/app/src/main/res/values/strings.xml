@@ -15,7 +15,7 @@
     <!-- Facebook application ID and custom URL scheme (app ID prefixed by 'fb'). -->
     <string name="facebook_application_id" translatable="false">1:598484073444:android:cf3c7c456e2ea578</string>
     <string name="facebook_login_protocol_scheme" translatable="false">722062088163122</string>
-    <string name="title_activity_menu">Menu Activity</string>
+    <string name="title_activity_menu">@string/app_name</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>
