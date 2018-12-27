@@ -87,9 +87,9 @@ public class LoginActivity extends AppCompatActivity {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         SharedPreferences sharedPreferences = getSharedPreferences("login",MODE_PRIVATE);
         sharedPreferences.edit().putBoolean("logged",true).apply();
-        sharedPreferences.edit().putString("id",user.getUid());
-        sharedPreferences.edit().putString("username",user.getDisplayName());
-        sharedPreferences.edit().putString("email",user.getEmail());
+        sharedPreferences.edit().putString("id",user.getUid()).apply();
+        sharedPreferences.edit().putString("username",user.getDisplayName()).apply();
+        sharedPreferences.edit().putString("email",user.getEmail()).apply();
     }
 
     private void goToMainActivity() {

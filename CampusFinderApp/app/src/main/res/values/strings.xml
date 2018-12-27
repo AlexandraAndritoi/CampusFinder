@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Campus Finder</string>
+
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password (optional)</string>
@@ -9,12 +10,12 @@
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email completions."</string>
+
     <!-- Facebook application ID and custom URL scheme (app ID prefixed by 'fb'). -->
     <string name="facebook_application_id" translatable="false">1:598484073444:android:cf3c7c456e2ea578</string>
     <string name="facebook_login_protocol_scheme" translatable="false">722062088163122</string>
+
     <string name="title_activity_menu">@string/app_name</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -23,8 +24,6 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
-    <string name="menu_user_name">Username%1$s</string>
-    <string name="menu_user_email">Email%1$s</string>
     <string name="menu_outdoor_map">Outdoor Map</string>
     <string name="menu_indoor_map">Indoor Map</string>
     <string name="menu_saved_places">Saved Places</string>
