@@ -1,5 +1,6 @@
 package com.upt.ac.campusfinderapp;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
@@ -25,17 +26,10 @@ public class LoginActivity extends AppCompatActivity {
 
     private SharedPreferences sharedPreferences;
 
-    private TextView mTextView;
-
-    private Button logOutButton;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
-        mTextView = findViewById(R.id.textView);
-        logOutButton = findViewById(R.id.logout);
 
         sharedPreferences = getSharedPreferences("login",MODE_PRIVATE);
 
@@ -44,19 +38,6 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         initFirebase();
-
-        logOutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AuthUI.getInstance()
-                        .signOut(LoginActivity.this)
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            public void onComplete(@NonNull Task<Void> task) {
-                                // ...
-                            }
-                        });
-            }
-        });
     }
 
     private void initFirebase() {
@@ -91,20 +72,20 @@ public class LoginActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 // Successfully signed in
                 saveUserCredentials();
-                mTextView.setText("Signed in");
                 goToMainActivity();
 
             } else {
                 // Sign in failed. If response is null the user canceled the
                 // sign-in flow using the back button. Otherwise check
                 // response.getError().getErrorCode() and handle the error.
-                mTextView.setText("Error");
             }
         }
     }
 
+    @SuppressLint("CommitPrefEdits")
     private void saveUserCredentials() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        SharedPreferences sharedPreferences = getSharedPreferences("login",MODE_PRIVATE);
         sharedPreferences.edit().putBoolean("logged",true).apply();
         sharedPreferences.edit().putString("id",user.getUid());
         sharedPreferences.edit().putString("username",user.getDisplayName());

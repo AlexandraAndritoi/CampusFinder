@@ -46,7 +46,7 @@
 
         <activity
             android:name=".OutdoorMap"
-            android:label="@string/title_activity_outdoor_map"></activity>
+            android:label="@string/title_activity_outdoor_map" />
     </application>
 
 </manifest>
