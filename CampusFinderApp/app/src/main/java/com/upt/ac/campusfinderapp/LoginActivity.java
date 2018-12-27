@@ -1,6 +1,7 @@
 package com.upt.ac.campusfinderapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,6 +23,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 123;
 
+    private SharedPreferences sharedPreferences;
+
     private TextView mTextView;
 
     private Button logOutButton;
@@ -33,6 +36,12 @@ public class LoginActivity extends AppCompatActivity {
 
         mTextView = findViewById(R.id.textView);
         logOutButton = findViewById(R.id.logout);
+
+        sharedPreferences = getSharedPreferences("login",MODE_PRIVATE);
+
+        if(sharedPreferences.getBoolean("logged",false)) {
+            goToMainActivity();
+        }
 
         initFirebase();
 
@@ -67,6 +76,7 @@ public class LoginActivity extends AppCompatActivity {
                 AuthUI.getInstance()
                         .createSignInIntentBuilder()
                         .setAvailableProviders(providers)
+//                        .setIsSmartLockEnabled(false)
                         .build(),
                 RC_SIGN_IN);
     }
@@ -80,13 +90,9 @@ public class LoginActivity extends AppCompatActivity {
 
             if (resultCode == RESULT_OK) {
                 // Successfully signed in
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                //mTextView.setText("Signed in");
-
-                Intent intent = new Intent(LoginActivity.this, MenuActivity.class);
-                startActivity(intent);
-
-                //LoginActivity.this.finish();
+                saveUserCredentials();
+                mTextView.setText("Signed in");
+                goToMainActivity();
 
             } else {
                 // Sign in failed. If response is null the user canceled the
@@ -95,5 +101,19 @@ public class LoginActivity extends AppCompatActivity {
                 mTextView.setText("Error");
             }
         }
+    }
+
+    private void saveUserCredentials() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        sharedPreferences.edit().putBoolean("logged",true).apply();
+        sharedPreferences.edit().putString("id",user.getUid());
+        sharedPreferences.edit().putString("username",user.getDisplayName());
+        sharedPreferences.edit().putString("email",user.getEmail());
+    }
+
+    private void goToMainActivity() {
+        Intent intent = new Intent(LoginActivity.this, MenuActivity.class);
+        startActivityForResult(intent, RC_SIGN_IN);
+        LoginActivity.this.finish();
     }
 }
