@@ -4,6 +4,9 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -96,10 +99,13 @@ public class MenuActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
+
+        Fragment fragment = null;
+
         int id = item.getItemId();
 
         if (id == R.id.nav_outdoor_map) {
-
+            fragment = new OutdoorMapFragment();
         } else if (id == R.id.nav_indoor_map) {
 
         } else if (id == R.id.nav_saved_places) {
@@ -108,6 +114,15 @@ public class MenuActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_log_out) {
 
+        }
+
+        if(fragment != null) {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction ft = fragmentManager.beginTransaction();
+
+            ft.replace(R.id.screen_area, fragment);
+
+            ft.commit();
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
