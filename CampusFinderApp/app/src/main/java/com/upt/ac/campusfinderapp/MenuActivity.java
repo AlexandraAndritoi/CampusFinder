@@ -57,7 +57,6 @@ public class MenuActivity extends AppCompatActivity
 
         TextView userName = header.findViewById(R.id.userNameTextView);
         userName.setText(sp.getString("username", ""));
-        String s = sp.getString("username", "");
 
         TextView userEmail = header.findViewById(R.id.userEmailTextView);
         userEmail.setText(sp.getString("email", ""));
@@ -107,7 +106,7 @@ public class MenuActivity extends AppCompatActivity
         if (id == R.id.nav_outdoor_map) {
             fragment = new OutdoorMapFragment();
         } else if (id == R.id.nav_indoor_map) {
-
+            fragment = new IndoorMapFragment();
         } else if (id == R.id.nav_saved_places) {
 
         } else if (id == R.id.nav_manage) {
