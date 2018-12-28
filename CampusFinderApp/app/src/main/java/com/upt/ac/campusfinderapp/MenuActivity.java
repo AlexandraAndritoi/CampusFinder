@@ -21,6 +21,8 @@ import android.widget.TextView;
 public class MenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private Fragment fragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +48,14 @@ public class MenuActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        setOutdoorMapFragmentAsDefault();
+
         showUserDetails();
+    }
+
+    private void setOutdoorMapFragmentAsDefault() {
+        fragment = new OutdoorMapFragment();
+        replaceFragment();
     }
 
     private void showUserDetails() {
@@ -99,7 +108,7 @@ public class MenuActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
 
-        Fragment fragment = null;
+//        Fragment fragment = null;
 
         int id = item.getItemId();
 
@@ -108,7 +117,7 @@ public class MenuActivity extends AppCompatActivity
         } else if (id == R.id.nav_indoor_map) {
             fragment = new IndoorMapFragment();
         } else if (id == R.id.nav_saved_places) {
-
+            fragment = new SavedPlacesFragment();
         } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_log_out) {
@@ -116,16 +125,20 @@ public class MenuActivity extends AppCompatActivity
         }
 
         if(fragment != null) {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction ft = fragmentManager.beginTransaction();
-
-            ft.replace(R.id.screen_area, fragment);
-
-            ft.commit();
+            replaceFragment();
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void replaceFragment() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+
+        ft.replace(R.id.screen_area, fragment);
+
+        ft.commit();
     }
 }
