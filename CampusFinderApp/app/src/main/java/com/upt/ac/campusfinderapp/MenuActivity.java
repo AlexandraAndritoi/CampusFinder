@@ -113,7 +113,7 @@ public class MenuActivity extends AppCompatActivity
 
 //        Fragment fragment = null;
 
-        fragment = new OutdoorMapFragment();
+//        fragment = new OutdoorMapFragment();
 
         int id = item.getItemId();
 
