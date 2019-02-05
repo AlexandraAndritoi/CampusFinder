@@ -1,4 +1,4 @@
-package com.upt.ac.campusfinderapp;
+package com.upt.ac.campusfinderapp.menu;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,6 +17,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.upt.ac.campusfinderapp.R;
+import com.upt.ac.campusfinderapp.SavedPlacesFragment;
+import com.upt.ac.campusfinderapp.SettingsActivity;
 import com.upt.ac.campusfinderapp.indoormap.IndoorMapFragment;
 import com.upt.ac.campusfinderapp.outdoormap.OutdoorMapFragment;
 
