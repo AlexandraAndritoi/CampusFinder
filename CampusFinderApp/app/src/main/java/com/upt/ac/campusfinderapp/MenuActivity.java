@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.upt.ac.campusfinderapp.indoormap.IndoorMapFragment;
 import com.upt.ac.campusfinderapp.outdoormap.OutdoorMapFragment;
 
 public class MenuActivity extends AppCompatActivity
