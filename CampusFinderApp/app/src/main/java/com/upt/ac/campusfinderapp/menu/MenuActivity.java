@@ -19,7 +19,7 @@ import android.widget.TextView;
 
 import com.upt.ac.campusfinderapp.R;
 import com.upt.ac.campusfinderapp.SavedPlacesFragment;
-import com.upt.ac.campusfinderapp.SettingsActivity;
+import com.upt.ac.campusfinderapp.settings.SettingsActivity;
 import com.upt.ac.campusfinderapp.indoormap.IndoorMapFragment;
 import com.upt.ac.campusfinderapp.outdoormap.OutdoorMapFragment;
 

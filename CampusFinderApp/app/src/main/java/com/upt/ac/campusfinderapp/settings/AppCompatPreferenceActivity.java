@@ -1,4 +1,4 @@
-package com.upt.ac.campusfinderapp;
+package com.upt.ac.campusfinderapp.settings;
 
 import android.content.res.Configuration;
 import android.os.Bundle;

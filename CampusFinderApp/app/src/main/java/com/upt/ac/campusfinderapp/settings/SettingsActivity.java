@@ -1,4 +1,4 @@
-package com.upt.ac.campusfinderapp;
+package com.upt.ac.campusfinderapp.settings;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -19,6 +19,7 @@ import android.preference.RingtonePreference;
 import android.text.TextUtils;
 import android.view.MenuItem;
 
+import com.upt.ac.campusfinderapp.R;
 import com.upt.ac.campusfinderapp.menu.MenuActivity;
 
 import java.util.List;
