@@ -1,8 +1,12 @@
 package com.upt.ac.campusfinderapp.utils;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -10,6 +14,7 @@ import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.upt.ac.campusfinderapp.Manifest;
 import com.upt.ac.campusfinderapp.R;
 import com.upt.ac.campusfinderapp.menu.MenuActivity;
 
@@ -18,7 +23,11 @@ import java.util.List;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private static final int RC_SIGN_IN = 123;
+    private final int RC_SIGN_IN = 123;
+    private final int LOCATION_PERMISSION_REQUEST_CODE = 456;
+
+    private final String ACCESS_FINE_LOCATION = android.Manifest.permission.ACCESS_FINE_LOCATION;
+    private final String ACCESS_COARSE_LOCATION = android.Manifest.permission.ACCESS_COARSE_LOCATION;
 
     private SharedPreferences sharedPreferences;
 
@@ -89,8 +98,18 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void goToMainActivity() {
+        getLocationPermission();
         Intent intent = new Intent(LoginActivity.this, MenuActivity.class);
         startActivityForResult(intent, RC_SIGN_IN);
         LoginActivity.this.finish();
+    }
+
+    private void getLocationPermission() {
+        String permissions[] = {ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION};
+
+        if(ContextCompat.checkSelfPermission(this.getApplicationContext(), ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED
+                || ContextCompat.checkSelfPermission(this.getApplicationContext(), ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(this, permissions, LOCATION_PERMISSION_REQUEST_CODE);
+        }
     }
 }
