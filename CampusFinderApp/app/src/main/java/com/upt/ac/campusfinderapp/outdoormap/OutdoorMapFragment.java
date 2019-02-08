@@ -1,6 +1,8 @@
 package com.upt.ac.campusfinderapp.outdoormap;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -15,11 +17,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -27,7 +33,9 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.upt.ac.campusfinderapp.R;
 
 public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback {
@@ -35,62 +43,31 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback {
     private SupportMapFragment mapFragment;
     private GoogleMap mMap;
 
-    private FusedLocationProviderClient fusedLocationClient;
-    private LocationCallback locationCallback;
-    private LocationRequest locationRequest;
-    private boolean requestingLocationUpdates;
+    private FusedLocationProviderClient mFusedLocationClient;
+    private Task<LocationSettingsResponse> mTask;
+    private LocationCallback mLocationCallback;
+    private LocationRequest mLocationRequest;
+    private Location mCurrentLocation;
+
+    private boolean mRequestingLocationUpdates;
 
     private final String REQUESTING_LOCATION_UPDATES_KEY = "requesting-location-updates-key";
+    private final int REQUEST_CHECK_SETTINGS = 123;
 
+    private Activity menuActivity;
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-        View v = getViewFromLayout(inflater);
-
-        fusedLocationClient = getLocationProvider();
-        getDeviceLocation();
-        initLocationCallback();
+        updateValuesFromBundle(savedInstanceState);
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this.getActivity());
         createLocationRequest();
-
-        mapFragment = getMapFragmentById();
-        if (mapFragment == null) {
-            createMapFragment();
-        }
-        asyncMap();
-        return v;
-    }
-
-    private View getViewFromLayout(@NonNull LayoutInflater inflater) {
-        return inflater.inflate(R.layout.fragment_outdoor_map, null);
-    }
-
-    private FusedLocationProviderClient getLocationProvider() {
-        return LocationServices.getFusedLocationProviderClient(this.getActivity());
-    }
-
-    private void getDeviceLocation() {
-        if (ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        fusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this.getActivity(), new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        // Got last known location. In some rare situations this can be null.
-                        if (location != null) {
-                            // Logic to handle location object
-                            LatLng locationCoordinates = new LatLng(location.getLatitude(), location.getLongitude());
-                            moveCamera(locationCoordinates);
-                        }
-                    }
-                });
-    }
-
-    private void initLocationCallback() {
-        locationCallback = new LocationCallback() {
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
+        SettingsClient client = LocationServices.getSettingsClient(this.getActivity());
+        mTask = client.checkLocationSettings(builder.build());
+        menuActivity = this.getActivity();
+        mLocationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 if (locationResult == null) {
@@ -98,23 +75,112 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback {
                 }
                 for (Location location : locationResult.getLocations()) {
                     // Update UI with location data
-                    // ...
+                    updateLocationOnScreen(location);
                 }
             }
-
-            ;
         };
+        mRequestingLocationUpdates = true;
+    }
+
+    private void updateValuesFromBundle(Bundle savedInstanceState) {
+        if (savedInstanceState == null) {
+            return;
+        }
+        // Update the value of mRequestingLocationUpdates from the Bundle.
+        if (savedInstanceState.keySet().contains(REQUESTING_LOCATION_UPDATES_KEY)) {
+            mRequestingLocationUpdates = savedInstanceState.getBoolean(
+                    REQUESTING_LOCATION_UPDATES_KEY);
+        } // Update UI to match restored state
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mRequestingLocationUpdates) {
+            startLocationUpdates();
+        }
+    }
+
+    private void startLocationUpdates() {
+        checkPermission();
+        mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, null);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        stopLocationUpdates();
+    }
+
+    private void stopLocationUpdates() {
+        mFusedLocationClient.removeLocationUpdates(mLocationCallback);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        View v = inflater.inflate(R.layout.fragment_outdoor_map, null);
+
+        mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        if (mapFragment == null) {
+            createMapFragment();
+        }
+        mapFragment.getMapAsync(this);
+        return v;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        checkPermission();
+
+        mFusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this.getActivity(), new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        // Got last known location. In some rare situations this can be null.
+                        if (location != null) {
+                            // Logic to handle location object
+                            updateLocationOnScreen(location);
+                        }
+                    }
+                });
+
+        mTask.addOnSuccessListener(this.getActivity(), new OnSuccessListener<LocationSettingsResponse>() {
+            @Override
+            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+                // All location settings are satisfied. The client can initialize
+                // location requests here.
+                // ...
+            }
+        });
+
+        mTask.addOnFailureListener(this.getActivity(), new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                if (e instanceof ResolvableApiException) {
+                    // Location settings are not satisfied, but this can be fixed
+                    // by showing the user a dialog.
+                    try {
+                        // Show the dialog by calling startResolutionForResult(),
+                        // and check the result in onActivityResult().
+                        ResolvableApiException resolvable = (ResolvableApiException) e;
+                        resolvable.startResolutionForResult(menuActivity,
+                                REQUEST_CHECK_SETTINGS);
+                    } catch (IntentSender.SendIntentException sendEx) {
+                        // Ignore the error.
+                    }
+                }
+            }
+        });
     }
 
     private void createLocationRequest() {
-        locationRequest = LocationRequest.create();
-        locationRequest.setInterval(10000);
-        locationRequest.setFastestInterval(5000);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-    }
-
-    private SupportMapFragment getMapFragmentById() {
-        return (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        mLocationRequest = LocationRequest.create();
+        mLocationRequest.setInterval(10000);
+        mLocationRequest.setFastestInterval(5000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
     private void createMapFragment() {
@@ -122,10 +188,6 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback {
         FragmentTransaction ft = fm.beginTransaction();
         mapFragment = SupportMapFragment.newInstance();
         ft.replace(R.id.map, mapFragment).commit();
-    }
-
-    private void asyncMap() {
-        mapFragment.getMapAsync(this);
     }
 
     @Override
@@ -138,7 +200,7 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putBoolean(REQUESTING_LOCATION_UPDATES_KEY,
-                requestingLocationUpdates);
+                mRequestingLocationUpdates);
         super.onSaveInstanceState(outState);
     }
 
@@ -147,41 +209,27 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback {
         mMap = googleMap;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (requestingLocationUpdates) {
-            startLocationUpdates();
-        }
-    }
-
-    private void startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        stopLocationUpdates();
-    }
-
-    private void stopLocationUpdates() {
-        fusedLocationClient.removeLocationUpdates(locationCallback);
-    }
-
     private void addMarker(LatLng latLng) {
         mMap.addMarker(new MarkerOptions().position(latLng).title("You're here"));
+    }
+
+    private void updateLocationOnScreen(Location location) {
+        mCurrentLocation = location;
+        LatLng coordinates = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+        moveCamera(coordinates);
     }
 
     private void moveCamera(LatLng latLng) {
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17);
         mMap.moveCamera(cameraUpdate);
-        if (ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        checkPermission();
+        mMap.setMyLocationEnabled(true);
+    }
+
+    private void checkPermission() {
+        if (ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        mMap.setMyLocationEnabled(true);
     }
 }
