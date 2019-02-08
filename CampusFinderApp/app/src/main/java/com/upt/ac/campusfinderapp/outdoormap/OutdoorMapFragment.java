@@ -83,7 +83,6 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback {
                         if (location != null) {
                             // Logic to handle location object
                             LatLng locationCoordinates = new LatLng(location.getLatitude(), location.getLongitude());
-                            addMarker(locationCoordinates);
                             moveCamera(locationCoordinates);
                         }
                     }
@@ -146,11 +145,6 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
     @Override
@@ -185,5 +179,9 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback {
     private void moveCamera(LatLng latLng) {
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17);
         mMap.moveCamera(cameraUpdate);
+        if (ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        mMap.setMyLocationEnabled(true);
     }
 }
