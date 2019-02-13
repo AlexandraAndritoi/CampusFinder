@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -36,12 +37,20 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.upt.ac.campusfinderapp.R;
+
+import java.util.Arrays;
 
 public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback {
 
     private SupportMapFragment mapFragment;
     private GoogleMap mMap;
+    private AutocompleteSupportFragment autocompleteFragment;
 
     private FusedLocationProviderClient mFusedLocationClient;
     private Task<LocationSettingsResponse> mTask;
@@ -62,7 +71,6 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback {
 
         updateValuesFromBundle(savedInstanceState);
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this.getActivity());
-        createLocationRequest();
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
         SettingsClient client = LocationServices.getSettingsClient(this.getActivity());
         mTask = client.checkLocationSettings(builder.build());
@@ -80,6 +88,9 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback {
             }
         };
         mRequestingLocationUpdates = true;
+
+        Places.initialize(this.getContext(), Integer.toString(R.string.google_api_key));
+        PlacesClient placesClient = Places.createClient(this.getContext());
     }
 
     private void updateValuesFromBundle(Bundle savedInstanceState) {
@@ -122,6 +133,11 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback {
 
         View v = inflater.inflate(R.layout.fragment_outdoor_map, null);
 
+
+        autocompleteFragment = (AutocompleteSupportFragment)
+                getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ADDRESS));
+        createLocationRequest();
         mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment == null) {
             createMapFragment();
@@ -174,12 +190,25 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback {
                 }
             }
         });
+
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                // TODO: Get info about the selected place.
+                addMarker(place.getLatLng());
+            }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+            }
+        });
     }
 
     private void createLocationRequest() {
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setInterval(10000);
-        mLocationRequest.setFastestInterval(5000);
+        mLocationRequest.setFastestInterval(2000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
