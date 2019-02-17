@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.upt.ac.campusfinderapp.R;
+import com.upt.ac.campusfinderapp.savedplaces.OnListFragmentInteractionListener;
 import com.upt.ac.campusfinderapp.savedplaces.SavedPlacesFragment;
 import com.upt.ac.campusfinderapp.savedplaces.dummy.DummyContent;
 import com.upt.ac.campusfinderapp.settings.SettingsActivity;
@@ -25,7 +26,7 @@ import com.upt.ac.campusfinderapp.indoormap.IndoorMapFragment;
 import com.upt.ac.campusfinderapp.outdoormap.OutdoorMapFragment;
 
 public class MenuActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, SavedPlacesFragment.OnListFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, OnListFragmentInteractionListener {
 
     private Fragment fragment;
 

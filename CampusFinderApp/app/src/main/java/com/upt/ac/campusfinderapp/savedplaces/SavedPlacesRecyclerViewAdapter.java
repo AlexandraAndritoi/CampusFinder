@@ -4,10 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-import android.R;
 
-import com.upt.ac.campusfinderapp.savedplaces.SavedPlacesFragment.OnListFragmentInteractionListener;
 import com.upt.ac.campusfinderapp.savedplaces.dummy.DummyContent.DummyItem;
 
 import java.util.List;
@@ -17,7 +14,7 @@ import java.util.List;
  * specified {@link OnListFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
-public class SavedPlacesRecyclerViewAdapter extends RecyclerView.Adapter<SavedPlacesRecyclerViewAdapter.ViewHolder> {
+public class SavedPlacesRecyclerViewAdapter extends RecyclerView.Adapter<ViewHolder> {
 
     private final List<DummyItem> mValues;
     private final OnListFragmentInteractionListener mListener;
@@ -57,24 +54,5 @@ public class SavedPlacesRecyclerViewAdapter extends RecyclerView.Adapter<SavedPl
     @Override
     public int getItemCount() {
         return mValues.size();
-    }
-
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        public final View mView;
-        public final TextView mIdView;
-        public final TextView mContentView;
-        public DummyItem mItem;
-
-        public ViewHolder(View view) {
-            super(view);
-            mView = view;
-            mIdView = (TextView) view.findViewById(com.upt.ac.campusfinderapp.R.id.item_number);
-            mContentView = (TextView) view.findViewById(com.upt.ac.campusfinderapp.R.id.content);
-        }
-
-        @Override
-        public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
-        }
     }
 }
