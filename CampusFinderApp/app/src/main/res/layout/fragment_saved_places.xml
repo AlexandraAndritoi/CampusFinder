@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".savedplaces.SavedPlacesFragment">
+
+    <EditText
+        android:id="@+id/saved_places_search_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/search_bar_background"
+        android:drawableStart="@drawable/ic_icon_magnify_glass"
+        android:drawableLeft="@drawable/ic_icon_magnify_glass"
+        android:hint="@string/search_here"
+        android:layout_marginTop="30dp"
+        android:textSize="24dp"
+        android:maxLines="1">
+    </EditText>
+
+</RelativeLayout>

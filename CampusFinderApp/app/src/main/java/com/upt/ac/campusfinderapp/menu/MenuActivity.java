@@ -2,6 +2,7 @@ package com.upt.ac.campusfinderapp.menu;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -18,15 +19,14 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.upt.ac.campusfinderapp.R;
-import com.upt.ac.campusfinderapp.savedplaces.OnListFragmentInteractionListener;
+import com.upt.ac.campusfinderapp.savedplaces.OnFragmentInteractionListener;
 import com.upt.ac.campusfinderapp.savedplaces.SavedPlacesFragment;
-import com.upt.ac.campusfinderapp.savedplaces.dummy.DummyContent;
 import com.upt.ac.campusfinderapp.settings.SettingsActivity;
 import com.upt.ac.campusfinderapp.indoormap.IndoorMapFragment;
 import com.upt.ac.campusfinderapp.outdoormap.OutdoorMapFragment;
 
 public class MenuActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnListFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, OnFragmentInteractionListener {
 
     private Fragment fragment;
 
@@ -158,7 +158,7 @@ public class MenuActivity extends AppCompatActivity
     }
 
     @Override
-    public void onListFragmentInteraction(DummyContent.DummyItem item) {
-
+    public void onFragmentInteraction(Uri uri) {
+        // TODO
     }
 }
