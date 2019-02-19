@@ -1,4 +1,4 @@
-package com.upt.ac.campusfinderapp.savedplaces.places;
+package com.upt.ac.campusfinderapp.model;
 
 import android.location.Location;
 
