@@ -4,36 +4,28 @@ import com.google.android.libraries.places.api.model.Place;
 
 public class SavedPlace {
 
-    private String placeId;
-    private String name;
     private String address;
+    private float latitude;
+    private float longitude;
+    private String name;
+    private String placeId;
 
-    private double latitude;
-    private double longitude;
+    public SavedPlace() {}
 
+    public SavedPlace(String address, float latitude, float longitude, String name, String placeId) {
+        this.address = address;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.name = name;
+        this.placeId = placeId;
+    }
 
     public SavedPlace(Place place) {
         placeId = place.getId();
         name = place.getName();
         address = place.getAddress();
-        latitude = place.getLatLng().latitude;
-        longitude = place.getLatLng().longitude;
-    }
-
-    public String getPlaceId() {
-        return placeId;
-    }
-
-    public void setPlaceId(String placeId) {
-        this.placeId = placeId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+        latitude = (float) place.getLatLng().latitude;
+        longitude = (float) place.getLatLng().longitude;
     }
 
     public String getAddress() {
@@ -44,19 +36,35 @@ public class SavedPlace {
         this.address = address;
     }
 
-    public double getLatitude() {
+    public float getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(double latitude) {
+    public void setLatitude(float latitude) {
         this.latitude = latitude;
     }
 
-    public double getLongitude() {
+    public float getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(double longitude) {
+    public void setLongitude(float longitude) {
         this.longitude = longitude;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPlaceId() {
+        return placeId;
+    }
+
+    public void setPlaceId(String placeId) {
+        this.placeId = placeId;
     }
 }
