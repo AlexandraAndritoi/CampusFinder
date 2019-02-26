@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import com.upt.ac.campusfinderapp.R;
 
-class SavedPlacesViewHolder extends RecyclerView.ViewHolder {
+class SavedPlacesViewHolder extends RecyclerView.ViewHolder  {
 
     private View mView;
 
