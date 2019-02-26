@@ -8,7 +8,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.upt.ac.campusfinderapp.model.SavedPlace;
-import com.upt.ac.campusfinderapp.savedplaces.SavedPlacesRecycleAdapter;
+import com.upt.ac.campusfinderapp.savedplaces.SavedPlacesFirebaseRecycleAdapter;
 
 public class SavedPlaceDAO {
 
@@ -27,8 +27,8 @@ public class SavedPlaceDAO {
                         .setLifecycleOwner(lifecycleOwner)
                         .build();
 
-        SavedPlacesRecycleAdapter savedPlacesRecycleAdapter = new SavedPlacesRecycleAdapter(options);
-        recyclerView.setAdapter(savedPlacesRecycleAdapter);
+        SavedPlacesFirebaseRecycleAdapter savedPlacesFirebaseRecycleAdapter = new SavedPlacesFirebaseRecycleAdapter(options);
+        recyclerView.setAdapter(savedPlacesFirebaseRecycleAdapter);
     }
 
     public void firebaseSavedPlaceUserSearch(LifecycleOwner lifecycleOwner, RecyclerView recyclerView, String string){
@@ -41,7 +41,7 @@ public class SavedPlaceDAO {
                         .setLifecycleOwner(lifecycleOwner)
                         .build();
 
-        SavedPlacesRecycleAdapter savedPlacesRecycleAdapter = new SavedPlacesRecycleAdapter(options);
-        recyclerView.setAdapter(savedPlacesRecycleAdapter);
+        SavedPlacesFirebaseRecycleAdapter savedPlacesFirebaseRecycleAdapter = new SavedPlacesFirebaseRecycleAdapter(options);
+        recyclerView.setAdapter(savedPlacesFirebaseRecycleAdapter);
     }
 }

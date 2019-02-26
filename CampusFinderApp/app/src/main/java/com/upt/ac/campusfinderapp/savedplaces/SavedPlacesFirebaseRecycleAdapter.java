@@ -10,9 +10,9 @@ import com.upt.ac.campusfinderapp.R;
 import com.upt.ac.campusfinderapp.model.SavedPlace;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 
-public class SavedPlacesRecycleAdapter extends FirebaseRecyclerAdapter<SavedPlace, SavedPlacesViewHolder> {
+public class SavedPlacesFirebaseRecycleAdapter extends FirebaseRecyclerAdapter<SavedPlace, SavedPlacesViewHolder> {
 
-    public SavedPlacesRecycleAdapter(@NonNull FirebaseRecyclerOptions<SavedPlace> options) {
+    public SavedPlacesFirebaseRecycleAdapter(@NonNull FirebaseRecyclerOptions<SavedPlace> options) {
         super(options);
     }
 
