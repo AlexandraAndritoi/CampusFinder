@@ -2,9 +2,11 @@ package com.upt.ac.campusfinderapp.savedplaces;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.upt.ac.campusfinderapp.R;
 import com.upt.ac.campusfinderapp.model.SavedPlace;
@@ -24,8 +26,15 @@ public class SavedPlaceRecyclerAdapter extends RecyclerView.Adapter<SavedPlacesV
     public SavedPlacesViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.saved_places_list_layout, viewGroup, false);
+        SavedPlacesViewHolder savedPlacesViewHolder = new SavedPlacesViewHolder(view);
+        savedPlacesViewHolder.setOnSavedPlaceClickListener(new OnSavedPlaceClickListener() {
+            @Override
+            public void onSavedPlaceItemClick(String name) {
+                Log.i("ADAPTER", "It's working");
+            }
+        });
 
-        return new SavedPlacesViewHolder(view);
+        return savedPlacesViewHolder;
     }
 
     @Override

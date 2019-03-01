@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -45,9 +46,7 @@ public class SavedPlacesFragment extends Fragment {
     private EditText mSearchText;
     private RecyclerView mSavedPlacesRecyclerView;
 
-    public SavedPlacesFragment() {
-        // Required empty public constructor
-    }
+    public SavedPlacesFragment() {}
 
     @Override
     public void onStart() {
@@ -94,8 +93,15 @@ public class SavedPlacesFragment extends Fragment {
             public SavedPlacesViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
                 View view = LayoutInflater.from(viewGroup.getContext())
                         .inflate(R.layout.saved_places_list_layout, viewGroup, false);
+                SavedPlacesViewHolder savedPlacesViewHolder = new SavedPlacesViewHolder(view);
+                savedPlacesViewHolder.setOnSavedPlaceClickListener(new OnSavedPlaceClickListener() {
+                    @Override
+                    public void onSavedPlaceItemClick(String name) {
+                        Toast.makeText(getContext(), name, Toast.LENGTH_SHORT).show();
+                    }
+                });
 
-                return new SavedPlacesViewHolder(view);
+                return savedPlacesViewHolder;
             }
         };
         adapter.startListening();
