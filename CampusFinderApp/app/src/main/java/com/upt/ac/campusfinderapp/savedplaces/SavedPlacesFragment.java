@@ -51,25 +51,16 @@ public class SavedPlacesFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        if(adapter != null) {
-            adapter.startListening();
-        }
     }
 
     @Override
     public void onStop() {
-        if(adapter != null) {
-            adapter.stopListening();
-        }
         super.onStop();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if(adapter != null) {
-            adapter.startListening();
-        }
     }
 
     @Override
@@ -77,34 +68,6 @@ public class SavedPlacesFragment extends Fragment {
         super.onCreate(savedInstanceState);
         savedPlaces = new ArrayList<>();
         mDatabaseReference = FirebaseDatabase.getInstance().getReference("savedplace");
-        FirebaseRecyclerOptions<SavedPlace> options =
-                new FirebaseRecyclerOptions.Builder<SavedPlace>()
-                        .setQuery(mDatabaseReference, SavedPlace.class)
-                        .build();
-
-        adapter = new FirebaseRecyclerAdapter<SavedPlace, SavedPlacesViewHolder>(options) {
-            @Override
-            protected void onBindViewHolder(@NonNull SavedPlacesViewHolder holder, int position, @NonNull SavedPlace model) {
-                holder.displaySavedPlace(model.getName());
-            }
-
-            @NonNull
-            @Override
-            public SavedPlacesViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-                View view = LayoutInflater.from(viewGroup.getContext())
-                        .inflate(R.layout.saved_places_list_layout, viewGroup, false);
-                SavedPlacesViewHolder savedPlacesViewHolder = new SavedPlacesViewHolder(view);
-                savedPlacesViewHolder.setOnSavedPlaceClickListener(new OnSavedPlaceClickListener() {
-                    @Override
-                    public void onSavedPlaceItemClick(String name, int position) {
-                        Toast.makeText(getContext(), name + " " + position, Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-                return savedPlacesViewHolder;
-            }
-        };
-        adapter.startListening();
     }
 
     @Override
@@ -138,7 +101,7 @@ public class SavedPlacesFragment extends Fragment {
         mSavedPlacesRecyclerView = view.findViewById(R.id.saved_places_recycler_view);
         mSavedPlacesRecyclerView.setHasFixedSize(true);
         mSavedPlacesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mSavedPlacesRecyclerView.setAdapter(adapter);
+        firebaseSearch("");
     }
 
     private void firebaseSearch(String string) {
@@ -165,13 +128,6 @@ public class SavedPlacesFragment extends Fragment {
 
             }
         });
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
     }
 
     @Override
