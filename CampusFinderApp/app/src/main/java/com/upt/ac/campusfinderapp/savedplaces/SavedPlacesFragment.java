@@ -14,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageButton;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -44,8 +43,7 @@ public class SavedPlacesFragment extends Fragment {
     private ArrayList<SavedPlace> savedPlaces;
 
     private EditText mSearchText;
-    private ImageButton mSearchButton;
-    private RecyclerView mSavedPlacesList;
+    private RecyclerView mSavedPlacesRecyclerView;
 
     public SavedPlacesFragment() {
         // Required empty public constructor
@@ -113,7 +111,7 @@ public class SavedPlacesFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mSearchText = view.findViewById(com.upt.ac.campusfinderapp.R.id.saved_places_search_bar);
+        mSearchText = view.findViewById(R.id.saved_places_edit_text);
         mSearchText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -131,11 +129,10 @@ public class SavedPlacesFragment extends Fragment {
             }
         });
 
-        mSearchButton = view.findViewById(com.upt.ac.campusfinderapp.R.id.search_saved_place_button);
-        mSavedPlacesList = view.findViewById(com.upt.ac.campusfinderapp.R.id.saved_places_list);
-        mSavedPlacesList.setHasFixedSize(true);
-        mSavedPlacesList.setLayoutManager(new LinearLayoutManager(getContext()));
-        mSavedPlacesList.setAdapter(adapter);
+        mSavedPlacesRecyclerView = view.findViewById(R.id.saved_places_recycler_view);
+        mSavedPlacesRecyclerView.setHasFixedSize(true);
+        mSavedPlacesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mSavedPlacesRecyclerView.setAdapter(adapter);
     }
 
     private void firebaseSearch(String string) {
@@ -152,7 +149,7 @@ public class SavedPlacesFragment extends Fragment {
                     }
 
                     SavedPlaceRecyclerAdapter savedPlaceRecyclerAdapter = new SavedPlaceRecyclerAdapter(savedPlaces);
-                    mSavedPlacesList.setAdapter(savedPlaceRecyclerAdapter);
+                    mSavedPlacesRecyclerView.setAdapter(savedPlaceRecyclerAdapter);
                     savedPlaceRecyclerAdapter.notifyDataSetChanged();
                 }
             }
