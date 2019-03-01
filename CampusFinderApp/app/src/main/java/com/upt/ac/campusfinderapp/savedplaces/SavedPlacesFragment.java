@@ -25,9 +25,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.upt.ac.campusfinderapp.R;
 import com.upt.ac.campusfinderapp.dao.SavedPlaceDAO;
 import com.upt.ac.campusfinderapp.model.SavedPlace;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -41,6 +44,7 @@ public class SavedPlacesFragment extends Fragment {
 
     private DatabaseReference mDatabaseReference;
     private FirebaseRecyclerAdapter<SavedPlace, SavedPlacesViewHolder> adapter;
+    private ArrayList<SavedPlace> savedPlaces;
 
     private EditText mSearchText;
     private ImageButton mSearchButton;
@@ -80,6 +84,7 @@ public class SavedPlacesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        savedPlaces = new ArrayList<>();
         mDatabaseReference = FirebaseDatabase.getInstance().getReference("savedplace");
         FirebaseRecyclerOptions<SavedPlace> options =
                 new FirebaseRecyclerOptions.Builder<SavedPlace>()
@@ -138,9 +143,9 @@ public class SavedPlacesFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(!s.toString().isEmpty()) {
+                //if(!s.toString().isEmpty()) {
                     firebaseSearch(s.toString());
-                }
+                //}
             }
         });
 
@@ -181,25 +186,20 @@ public class SavedPlacesFragment extends Fragment {
     private void firebaseSearch(String string) {
         Query query = mDatabaseReference.orderByChild("name").startAt(string).endAt(string + "\uf8ff");
 
-        query.addChildEventListener(new ChildEventListener() {
+        query.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.hasChildren()) {
+                    savedPlaces.clear();
+                    for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                        SavedPlace savedPlace = ds.getValue(SavedPlace.class);
+                        savedPlaces.add(savedPlace);
+                    }
 
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
+                    SavedPlaceRecyclerAdapter savedPlaceRecyclerAdapter = new SavedPlaceRecyclerAdapter(savedPlaces);
+                    mSavedPlacesList.setAdapter(savedPlaceRecyclerAdapter);
+                    savedPlaceRecyclerAdapter.notifyDataSetChanged();
+                }
             }
 
             @Override
@@ -207,6 +207,44 @@ public class SavedPlacesFragment extends Fragment {
 
             }
         });
+
+//        query.addChildEventListener(new ChildEventListener() {
+//
+//            private SavedPlaceRecyclerAdapter adapter = new SavedPlaceRecyclerAdapter();
+//
+//            @Override
+//            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//                SavedPlace savedPlace = dataSnapshot.getValue(SavedPlace.class);
+//                adapter.setSavedPlace(savedPlace);
+//                //SavedPlaceRecyclerAdapter adapter = new SavedPlaceRecyclerAdapter(savedPlace);
+//                mSavedPlacesList.setAdapter(adapter);
+//                adapter.notifyDataSetChanged();
+//            }
+//
+//            @Override
+//            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//                SavedPlace savedPlace = dataSnapshot.getValue(SavedPlace.class);
+//                adapter.setSavedPlace(savedPlace);
+//                //SavedPlaceRecyclerAdapter adapter = new SavedPlaceRecyclerAdapter(savedPlace);
+//                mSavedPlacesList.setAdapter(adapter);
+//                adapter.notifyDataSetChanged();
+//            }
+//
+//            @Override
+//            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+//
+//            }
+//
+//            @Override
+//            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
     }
 
     // TODO: Rename method, update argument and hook method into UI event
