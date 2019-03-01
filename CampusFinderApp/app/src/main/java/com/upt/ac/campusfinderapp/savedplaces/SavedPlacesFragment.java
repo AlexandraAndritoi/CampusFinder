@@ -40,7 +40,6 @@ public class SavedPlacesFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     private DatabaseReference mDatabaseReference;
-    private FirebaseRecyclerAdapter<SavedPlace, SavedPlacesViewHolder> adapter;
     private ArrayList<SavedPlace> savedPlaces;
 
     private EditText mSearchText;
