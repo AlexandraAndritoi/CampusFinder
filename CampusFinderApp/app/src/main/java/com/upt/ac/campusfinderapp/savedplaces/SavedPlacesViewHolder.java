@@ -25,7 +25,7 @@ class SavedPlacesViewHolder extends RecyclerView.ViewHolder  {
         goToSavedPlaceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onSavedPlaceClickListener.onSavedPlaceItemClick(savedPlaceName.getText().toString());
+                onSavedPlaceClickListener.onSavedPlaceItemClick(savedPlaceName.getText().toString(), getAdapterPosition());
             }
         });
     }

@@ -29,7 +29,7 @@ public class SavedPlaceRecyclerAdapter extends RecyclerView.Adapter<SavedPlacesV
         SavedPlacesViewHolder savedPlacesViewHolder = new SavedPlacesViewHolder(view);
         savedPlacesViewHolder.setOnSavedPlaceClickListener(new OnSavedPlaceClickListener() {
             @Override
-            public void onSavedPlaceItemClick(String name) {
+            public void onSavedPlaceItemClick(String name, int position) {
                 Log.i("ADAPTER", "It's working");
             }
         });

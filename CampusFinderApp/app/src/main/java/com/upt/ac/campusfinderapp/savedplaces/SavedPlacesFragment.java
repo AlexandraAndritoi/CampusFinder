@@ -96,8 +96,8 @@ public class SavedPlacesFragment extends Fragment {
                 SavedPlacesViewHolder savedPlacesViewHolder = new SavedPlacesViewHolder(view);
                 savedPlacesViewHolder.setOnSavedPlaceClickListener(new OnSavedPlaceClickListener() {
                     @Override
-                    public void onSavedPlaceItemClick(String name) {
-                        Toast.makeText(getContext(), name, Toast.LENGTH_SHORT).show();
+                    public void onSavedPlaceItemClick(String name, int position) {
+                        Toast.makeText(getContext(), name + " " + position, Toast.LENGTH_SHORT).show();
                     }
                 });
 
