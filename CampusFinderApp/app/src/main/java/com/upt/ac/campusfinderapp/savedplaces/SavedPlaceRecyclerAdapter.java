@@ -1,6 +1,5 @@
 package com.upt.ac.campusfinderapp.savedplaces;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,9 +15,7 @@ public class SavedPlaceRecyclerAdapter extends RecyclerView.Adapter<SavedPlacesV
 
     private ArrayList<SavedPlace> savedPlaces;
 
-    public SavedPlaceRecyclerAdapter() { }
-
-    public SavedPlaceRecyclerAdapter(ArrayList<SavedPlace> savedPlaces) {
+    SavedPlaceRecyclerAdapter(ArrayList<SavedPlace> savedPlaces) {
         this.savedPlaces = savedPlaces;
     }
 
@@ -40,12 +37,5 @@ public class SavedPlaceRecyclerAdapter extends RecyclerView.Adapter<SavedPlacesV
     @Override
     public int getItemCount() {
         return savedPlaces.size();
-    }
-
-    public class SavedPlaceViewholder extends RecyclerView.ViewHolder {
-
-        public SavedPlaceViewholder(@NonNull View itemView) {
-            super(itemView);
-        }
     }
 }

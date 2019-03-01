@@ -13,13 +13,11 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -27,7 +25,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.upt.ac.campusfinderapp.R;
-import com.upt.ac.campusfinderapp.dao.SavedPlaceDAO;
 import com.upt.ac.campusfinderapp.model.SavedPlace;
 
 import java.util.ArrayList;
@@ -50,8 +47,6 @@ public class SavedPlacesFragment extends Fragment {
     private ImageButton mSearchButton;
     private RecyclerView mSavedPlacesList;
 
-//    private SavedPlaceDAO savedPlaceDAO;
-
     public SavedPlacesFragment() {
         // Required empty public constructor
     }
@@ -62,7 +57,6 @@ public class SavedPlacesFragment extends Fragment {
         if(adapter != null) {
             adapter.startListening();
         }
-//        firebaseSavedPlaceSearch();
     }
 
     @Override
@@ -107,21 +101,11 @@ public class SavedPlacesFragment extends Fragment {
             }
         };
         adapter.startListening();
-//        savedPlaceDAO = new SavedPlaceDAO();
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(com.upt.ac.campusfinderapp.R.layout.fragment_saved_places, container, false);
-//        mSearchButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-////                firebaseSavedPlaceUserSearch(mSearchText.getText().toString());
-////                firebaseUserSearch(mSearchText.getText().toString());
-//            }
-//        });
         return view;
     }
 
@@ -143,9 +127,7 @@ public class SavedPlacesFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                //if(!s.toString().isEmpty()) {
-                    firebaseSearch(s.toString());
-                //}
+                firebaseSearch(s.toString());
             }
         });
 
@@ -155,33 +137,6 @@ public class SavedPlacesFragment extends Fragment {
         mSavedPlacesList.setLayoutManager(new LinearLayoutManager(getContext()));
         mSavedPlacesList.setAdapter(adapter);
     }
-
-    //    private void firebaseUserSearch(String string) {
-//
-//        Query query = mDatabaseReference.child("01").startAt(string).endAt(string + "\uf8ff");
-//
-//        FirebaseRecyclerOptions<SavedPlace> options =
-//                new FirebaseRecyclerOptions.Builder<SavedPlace>()
-//                        .setQuery(query, SavedPlace.class)
-////                        .setLifecycleOwner(lifecycleOwner)
-//                        .build();
-//
-//        FirebaseRecyclerAdapter<SavedPlace, SavedPlacesViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<SavedPlace, SavedPlacesViewHolder>(options) {
-//            @Override
-//            protected void onBindViewHolder(@NonNull SavedPlacesViewHolder holder, int position, @NonNull SavedPlace model) {
-//                holder.displaySavedPlace(model.getName());
-//            }
-//
-//            @NonNull
-//            @Override
-//            public SavedPlacesViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-//                View view = LayoutInflater.from(viewGroup.getContext())
-//                        .inflate(R.layout.saved_places_list_layout, viewGroup, false);
-//
-//                return new SavedPlacesViewHolder(view);
-//            }
-//        };
-//    }
 
     private void firebaseSearch(String string) {
         Query query = mDatabaseReference.orderByChild("name").startAt(string).endAt(string + "\uf8ff");
@@ -207,44 +162,6 @@ public class SavedPlacesFragment extends Fragment {
 
             }
         });
-
-//        query.addChildEventListener(new ChildEventListener() {
-//
-//            private SavedPlaceRecyclerAdapter adapter = new SavedPlaceRecyclerAdapter();
-//
-//            @Override
-//            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//                SavedPlace savedPlace = dataSnapshot.getValue(SavedPlace.class);
-//                adapter.setSavedPlace(savedPlace);
-//                //SavedPlaceRecyclerAdapter adapter = new SavedPlaceRecyclerAdapter(savedPlace);
-//                mSavedPlacesList.setAdapter(adapter);
-//                adapter.notifyDataSetChanged();
-//            }
-//
-//            @Override
-//            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//                SavedPlace savedPlace = dataSnapshot.getValue(SavedPlace.class);
-//                adapter.setSavedPlace(savedPlace);
-//                //SavedPlaceRecyclerAdapter adapter = new SavedPlaceRecyclerAdapter(savedPlace);
-//                mSavedPlacesList.setAdapter(adapter);
-//                adapter.notifyDataSetChanged();
-//            }
-//
-//            @Override
-//            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-//
-//            }
-//
-//            @Override
-//            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -270,12 +187,4 @@ public class SavedPlacesFragment extends Fragment {
         super.onDetach();
         mListener = null;
     }
-
-//    private void firebaseSavedPlaceSearch(){
-//        savedPlaceDAO.firebaseSavedPlaceSearch(getViewLifecycleOwner(), mSavedPlacesList);
-//    }
-//
-//    private void firebaseSavedPlaceUserSearch(String savedPlaceName){
-//        savedPlaceDAO.firebaseSavedPlaceUserSearch(getViewLifecycleOwner(), mSavedPlacesList, savedPlaceName);
-//    }
 }
