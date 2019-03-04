@@ -2,6 +2,7 @@ package com.upt.ac.campusfinderapp.outdoormap;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -12,6 +13,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +42,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.upt.ac.campusfinderapp.R;
@@ -69,12 +72,13 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        menuActivity = this.getActivity();
+
         updateValuesFromBundle(savedInstanceState);
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this.getActivity());
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
         SettingsClient client = LocationServices.getSettingsClient(this.getActivity());
         mTask = client.checkLocationSettings(builder.build());
-        menuActivity = this.getActivity();
         mLocationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
@@ -89,8 +93,10 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback {
         };
         mRequestingLocationUpdates = true;
 
-        Places.initialize(this.getContext(), Integer.toString(R.string.google_api_key));
-        PlacesClient placesClient = Places.createClient(this.getContext());
+        if(!Places.isInitialized()) {
+            Places.initialize(this.getContext(), "");
+        }
+//        PlacesClient placesClient = Places.createClient(this.getContext());
     }
 
     private void updateValuesFromBundle(Bundle savedInstanceState) {
@@ -137,6 +143,18 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback {
         autocompleteFragment = (AutocompleteSupportFragment)
                 getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ADDRESS));
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                // TODO: Get info about the selected place.
+                addMarker(place.getLatLng());
+            }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+            }
+        });
         createLocationRequest();
         mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment == null) {
@@ -149,8 +167,8 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        checkPermission();
 
+        checkPermission();
         mFusedLocationClient.getLastLocation()
                 .addOnSuccessListener(this.getActivity(), new OnSuccessListener<Location>() {
                     @Override
@@ -188,19 +206,6 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback {
                         // Ignore the error.
                     }
                 }
-            }
-        });
-
-        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-            @Override
-            public void onPlaceSelected(Place place) {
-                // TODO: Get info about the selected place.
-                addMarker(place.getLatLng());
-            }
-
-            @Override
-            public void onError(Status status) {
-                // TODO: Handle the error.
             }
         });
     }
@@ -260,5 +265,10 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback {
                 && ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }
