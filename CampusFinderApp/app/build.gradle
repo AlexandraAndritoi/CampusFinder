@@ -44,6 +44,11 @@ dependencies {
     implementation 'com.facebook.android:facebook-android-sdk:4.26.0'
     implementation 'com.google.firebase:firebase-database:16.0.6'
     implementation 'com.firebaseui:firebase-ui-database:4.3.1'
+
+    implementation 'com.tomtom.online:sdk-maps:2.4011'
+    implementation 'com.tomtom.online:sdk-routing:2.4011'
+    implementation 'com.tomtom.online:sdk-search:2.4011'
+    implementation 'com.tomtom.online:sdk-maps-ui-extensions:2.4011'
 }
 apply plugin: 'com.google.gms.google-services'
 
