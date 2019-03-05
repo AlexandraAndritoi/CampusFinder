@@ -110,4 +110,8 @@
     <!---->
     <string name="search_here">Search here</string>
     <string name="go_to">Go to</string>
+
+
+    <string name="geocode_no_results">No geocoder results. Choose different location and try again.</string>
+    <string name="api_response_error">API response error: \'%1$s\'.</string>
 </resources>
