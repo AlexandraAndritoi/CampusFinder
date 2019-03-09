@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -86,6 +87,7 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
     public void onMapReady(@NonNull TomtomMap tomtomMap) {
         this.tomtomMap = tomtomMap;
         this.tomtomMap.setMyLocationEnabled(true);
+        this.tomtomMap.getUserLocation();
         this.tomtomMap.addOnMapLongClickListener(this);
         this.tomtomMap.getMarkerSettings().setMarkersClustering(true);
     }
@@ -205,7 +207,8 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
     }
 
     private void handleApiError(Throwable e) {
-        Toast.makeText(getContext(), getString(R.string.api_response_error, e.getLocalizedMessage()), Toast.LENGTH_LONG).show();
+        Log.d(getString(R.string.api_response_error),getString(R.string.general_error_message));
+        Toast.makeText(getContext(), getString(R.string.api_response_error, e.getLocalizedMessage()), Toast.LENGTH_SHORT).show();
     }
 
     @Override
