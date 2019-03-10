@@ -118,28 +118,34 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
                 handleSearchClick(v);
             }
 
-            private void handleSearchClick(View v) {
-                String textToSearch = editTextPois.getText().toString();
-                if(!textToSearch.isEmpty()) {
-                    if (isRouteSet()) {
-                        Optional<CharSequence> description = Optional.fromNullable(v.getContentDescription());
+            String textToSearch;
 
-                        if (description.isPresent()) {
-                            editTextPois.setText(description.get());
-                            v.setSelected(true);
-                        }
-                        if (isWayPointPositionSet()) {
-                            tomtomMap.clear();
-                            drawRoute(departurePosition, destinationPosition);
-                        }
-                        tomtomMap.removeMarkers();
-                        searchAlongTheRoute(route, textToSearch);
-                    }
-                    else {
-                        setLastKnownLocationAsDeparturePosition();
-                        searchNearMe(textToSearch);
-                    }
+            private void handleSearchClick(View v) {
+                textToSearch = editTextPois.getText().toString();
+                if(textToSearch.isEmpty()) {
+                    return;
                 }
+                if (isRouteSet()) {
+                    searchWithRoute(v);
+                }
+                else {
+                    searchWithoutRoute();
+                }
+            }
+
+            private  void searchWithRoute(View v) {
+                Optional<CharSequence> description = Optional.fromNullable(v.getContentDescription());
+
+                if (description.isPresent()) {
+                    editTextPois.setText(description.get());
+                    v.setSelected(true);
+                }
+                if (isWayPointPositionSet()) {
+                    tomtomMap.clear();
+                    drawRoute(departurePosition, destinationPosition);
+                }
+                tomtomMap.removeMarkers();
+                searchAlongTheRoute(route, textToSearch);
             }
 
             private boolean isRouteSet() {
@@ -169,7 +175,7 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
                                     }
                                     tomtomMap.zoomToAllMarkers();
                                 } else {
-                                    Toast.makeText(getContext(), String.format(getString(R.string.no_search_results), textToSearch), Toast.LENGTH_LONG).show();
+                                    handleNoSearchResultError(textToSearch);
                                 }
                             }
 
@@ -194,12 +200,17 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
                         });
             }
 
+            private void searchWithoutRoute() {
+                setLastKnownLocationAsDeparturePosition();
+                searchNearMe();
+            }
+
             private void setLastKnownLocationAsDeparturePosition() {
                 Location location = getLastKnownLocation();
                 departurePosition = new LatLng(location.getLatitude(), location.getLongitude());
             }
 
-            private void searchNearMe(String textToSearch) {
+            private void searchNearMe() {
                 searchApi.search(new FuzzySearchQueryBuilder(textToSearch)
                         .withPreciseness(new LatLngAcc(departurePosition, STANDARD_RADIUS)).build())
                         .subscribeOn(Schedulers.io())
@@ -212,7 +223,7 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
 
                             @Override
                             public void onError(Throwable e) {
-                                Toast.makeText(getContext(), String.format(getString(R.string.no_search_results), textToSearch), Toast.LENGTH_LONG).show();
+                                handleNoSearchResultError(textToSearch);
                             }
 
                             private void drawRouteBasedOnFirstFuzzySearchResponse(List<FuzzySearchResult> results) {
