@@ -1,5 +1,6 @@
 package com.upt.ac.campusfinderapp.outdoormap;
 
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 
 import com.google.common.base.Optional;
 import com.tomtom.online.sdk.common.location.LatLng;
+import com.tomtom.online.sdk.common.location.LatLngAcc;
 import com.tomtom.online.sdk.map.BaseMarkerBalloon;
 import com.tomtom.online.sdk.map.Icon;
 import com.tomtom.online.sdk.map.MapFragment;
@@ -33,18 +35,22 @@ import com.tomtom.online.sdk.routing.data.FullRoute;
 import com.tomtom.online.sdk.routing.data.RouteQuery;
 import com.tomtom.online.sdk.routing.data.RouteQueryBuilder;
 import com.tomtom.online.sdk.routing.data.RouteType;
+import com.tomtom.online.sdk.routing.data.TravelMode;
 import com.tomtom.online.sdk.search.OnlineSearchApi;
 import com.tomtom.online.sdk.search.SearchApi;
 import com.tomtom.online.sdk.routing.data.RouteResponse;
-import com.tomtom.online.sdk.search.data.alongroute.AlongRouteSearchQuery;
 import com.tomtom.online.sdk.search.data.alongroute.AlongRouteSearchQueryBuilder;
 import com.tomtom.online.sdk.search.data.alongroute.AlongRouteSearchResponse;
 import com.tomtom.online.sdk.search.data.alongroute.AlongRouteSearchResult;
+import com.tomtom.online.sdk.search.data.fuzzy.FuzzySearchQueryBuilder;
+import com.tomtom.online.sdk.search.data.fuzzy.FuzzySearchResponse;
+import com.tomtom.online.sdk.search.data.fuzzy.FuzzySearchResult;
 import com.tomtom.online.sdk.search.data.reversegeocoder.ReverseGeocoderSearchQueryBuilder;
 import com.tomtom.online.sdk.search.data.reversegeocoder.ReverseGeocoderSearchResponse;
 import com.upt.ac.campusfinderapp.R;
 
 import java.util.List;
+import java.util.Locale;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
@@ -66,6 +72,9 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
 
     private ImageButton btnSearch;
     private EditText editTextPois;
+
+    private Integer STANDARD_RADIUS = 3 * 1000;
+    private Integer SEARCH_FUZZY_LVL_MIN = 2;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -97,6 +106,7 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
         btnSearch = view.findViewById(R.id.search_place_button);
         editTextPois = view.findViewById(R.id.search_place_edit_text);
     }
+
     private void setupUIViewListeners() {
         View.OnClickListener searchButtonListener = getSearchButtonListener();
         btnSearch.setOnClickListener(searchButtonListener);
@@ -128,6 +138,35 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
                         searchAlongTheRoute(route, textToSearch);
                     }
                 }
+                else {
+                    Location userLocation = getLastKnownLocation();
+                    departurePosition = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
+                    String textToSearch = editTextPois.getText().toString();
+
+                    searchApi.search(new FuzzySearchQueryBuilder(textToSearch)
+                            .withPreciseness(new LatLngAcc(departurePosition, STANDARD_RADIUS)).build())
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new DisposableSingleObserver<FuzzySearchResponse>(){
+                                @Override
+                                public void onSuccess(FuzzySearchResponse fuzzySearchResponse) {
+                                    Toast.makeText(getContext(), "Am reusit", Toast.LENGTH_SHORT).show();
+                                    createDestinationPositionBasedOnFuzzySearchResponse(fuzzySearchResponse.getResults());
+                                }
+
+                                @Override
+                                public void onError(Throwable e) {
+                                    Toast.makeText(getContext(), String.format(getString(R.string.no_search_results), textToSearch), Toast.LENGTH_LONG).show();
+                                }
+
+                                private void createDestinationPositionBasedOnFuzzySearchResponse(List<FuzzySearchResult> results) {
+                                    if(!results.isEmpty()) {
+                                        destinationPosition = results.get(0).getPosition();
+                                        drawRoute(departurePosition, destinationPosition);
+                                    }
+                                }
+                            });
+                }
             }
 
             private boolean isRouteSet() {
@@ -137,6 +176,7 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
             private boolean isWayPointPositionSet() {
                 return wayPointPosition != null;
             }
+
             private void searchAlongTheRoute(Route route, final String textToSearch) {
                 final Integer MAX_DETOUR_TIME = 1000;
                 final Integer QUERY_LIMIT = 10;
@@ -288,6 +328,8 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
 
     private void drawRouteWithWayPoints(LatLng start, LatLng stop, LatLng[] wayPoints) {
         RouteQuery routeQuery = createRouteQuery(start, stop, wayPoints);
+        routeQuery.withTravelMode(TravelMode.PEDESTRIAN);
+        routeQuery.withRouteType(RouteType.SHORTEST);
         routingApi.planRoute(routeQuery)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -323,6 +365,8 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
         }
     }
 
+    private Location getLastKnownLocation() { return tomtomMap.getUserLocation(); }
+
     private boolean isDestinationPositionSet() {
         return destinationPosition != null;
     }
@@ -334,6 +378,10 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
     private void handleApiError(Throwable e) {
         Log.d(getString(R.string.api_response_error),getString(R.string.general_error_message));
         Toast.makeText(getContext(), getString(R.string.api_response_error, e.getLocalizedMessage()), Toast.LENGTH_SHORT).show();
+    }
+
+    private  void handleNoSearchResultError(String textToSearch) {
+        Toast.makeText(getContext(), String.format(getString(R.string.no_search_results), textToSearch), Toast.LENGTH_LONG).show();
     }
 
     @Override
