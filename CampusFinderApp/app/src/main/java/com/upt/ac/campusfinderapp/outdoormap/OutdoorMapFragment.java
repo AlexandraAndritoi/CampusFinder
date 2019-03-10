@@ -8,8 +8,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.common.base.Optional;
@@ -17,10 +19,12 @@ import com.tomtom.online.sdk.common.location.LatLng;
 import com.tomtom.online.sdk.map.BaseMarkerBalloon;
 import com.tomtom.online.sdk.map.Icon;
 import com.tomtom.online.sdk.map.MapFragment;
+import com.tomtom.online.sdk.map.Marker;
 import com.tomtom.online.sdk.map.MarkerBuilder;
 import com.tomtom.online.sdk.map.OnMapReadyCallback;
 import com.tomtom.online.sdk.map.Route;
 import com.tomtom.online.sdk.map.RouteBuilder;
+import com.tomtom.online.sdk.map.SingleLayoutBalloonViewAdapter;
 import com.tomtom.online.sdk.map.TomtomMap;
 import com.tomtom.online.sdk.map.TomtomMapCallback;
 import com.tomtom.online.sdk.routing.OnlineRoutingApi;
@@ -186,6 +190,33 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
         this.tomtomMap.getUserLocation();
         this.tomtomMap.addOnMapLongClickListener(this);
         this.tomtomMap.getMarkerSettings().setMarkersClustering(true);
+        this.tomtomMap.getMarkerSettings().setMarkerBalloonViewAdapter(createCustomViewAdapter());
+    }
+
+    private SingleLayoutBalloonViewAdapter createCustomViewAdapter() {
+        return new SingleLayoutBalloonViewAdapter(R.layout.marker_custom_balloon) {
+            @Override
+            public void onBindView(View view, final Marker marker, BaseMarkerBalloon baseMarkerBalloon) {
+                Button btnAddWayPoint = view.findViewById(R.id.btn_balloon_waypoint);
+                TextView textViewPoiName = view.findViewById(R.id.textview_balloon_poiname);
+                TextView textViewPoiAddress = view.findViewById(R.id.textview_balloon_poiaddress);
+                textViewPoiName.setText(baseMarkerBalloon.getStringProperty(getString(R.string.poi_name_key)));
+                textViewPoiAddress.setText(baseMarkerBalloon.getStringProperty(getString(R.string.address_key)));
+                btnAddWayPoint.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        setWayPoint(marker);
+                    }
+
+                    private void setWayPoint(Marker marker) {
+                        wayPointPosition = marker.getPosition();
+                        tomtomMap.clearRoute();
+                        drawRouteWithWayPoints(departurePosition, destinationPosition, new LatLng[] {wayPointPosition});
+                        marker.deselect();
+                    }
+                });
+            }
+        };
     }
 
     @Override
@@ -211,7 +242,6 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
                 .subscribe(new DisposableSingleObserver<ReverseGeocoderSearchResponse>() {
                     @Override
                     public void onSuccess(ReverseGeocoderSearchResponse response) {
-                        //dismissDialogInProgress();
                         processResponse(response);
                     }
 
@@ -235,7 +265,6 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
                             destinationPosition = geocodedPosition;
                             tomtomMap.removeMarkers();
                             drawRoute(departurePosition, destinationPosition);
-                            //enableSearchButtons();
                         }
                     }
 
