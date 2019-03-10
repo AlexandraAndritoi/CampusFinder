@@ -8,10 +8,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.common.base.Optional;
 import com.tomtom.online.sdk.common.location.LatLng;
+import com.tomtom.online.sdk.map.BaseMarkerBalloon;
 import com.tomtom.online.sdk.map.Icon;
 import com.tomtom.online.sdk.map.MapFragment;
 import com.tomtom.online.sdk.map.MarkerBuilder;
@@ -29,6 +32,10 @@ import com.tomtom.online.sdk.routing.data.RouteType;
 import com.tomtom.online.sdk.search.OnlineSearchApi;
 import com.tomtom.online.sdk.search.SearchApi;
 import com.tomtom.online.sdk.routing.data.RouteResponse;
+import com.tomtom.online.sdk.search.data.alongroute.AlongRouteSearchQuery;
+import com.tomtom.online.sdk.search.data.alongroute.AlongRouteSearchQueryBuilder;
+import com.tomtom.online.sdk.search.data.alongroute.AlongRouteSearchResponse;
+import com.tomtom.online.sdk.search.data.alongroute.AlongRouteSearchResult;
 import com.tomtom.online.sdk.search.data.reversegeocoder.ReverseGeocoderSearchQueryBuilder;
 import com.tomtom.online.sdk.search.data.reversegeocoder.ReverseGeocoderSearchResponse;
 import com.upt.ac.campusfinderapp.R;
@@ -53,6 +60,9 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
     private Icon departureIcon;
     private Icon destinationIcon;
 
+    private ImageButton btnSearch;
+    private EditText editTextPois;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +74,7 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_outdoor_map, null);
         initTomTomServices();
-        initUIViews();
+        initUIViews(v);
         setupUIViewListeners();
         return v;
     }
@@ -77,11 +87,97 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
         routingApi = OnlineRoutingApi.create(getContext());
     }
 
-    private void initUIViews() {
+    private void initUIViews(View view) {
         departureIcon = Icon.Factory.fromResources(getContext(), R.drawable.ic_map_route_departure);
         destinationIcon = Icon.Factory.fromResources(getContext(), R.drawable.ic_map_route_destination);
+        btnSearch = view.findViewById(R.id.search_place_button);
+        editTextPois = view.findViewById(R.id.search_place_edit_text);
     }
-    private void setupUIViewListeners() {}
+    private void setupUIViewListeners() {
+        View.OnClickListener searchButtonListener = getSearchButtonListener();
+        btnSearch.setOnClickListener(searchButtonListener);
+    }
+
+    @NonNull
+    private View.OnClickListener getSearchButtonListener() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                handleSearchClick(v);
+            }
+
+            private void handleSearchClick(View v) {
+                if (isRouteSet()) {
+                    Optional<CharSequence> description = Optional.fromNullable(v.getContentDescription());
+
+                    if (description.isPresent()) {
+                        editTextPois.setText(description.get());
+                        v.setSelected(true);
+                    }
+                    if (isWayPointPositionSet()) {
+                        tomtomMap.clear();
+                        drawRoute(departurePosition, destinationPosition);
+                    }
+                    String textToSearch = editTextPois.getText().toString();
+                    if (!textToSearch.isEmpty()) {
+                        tomtomMap.removeMarkers();
+                        searchAlongTheRoute(route, textToSearch);
+                    }
+                }
+            }
+
+            private boolean isRouteSet() {
+                return route != null;
+            }
+
+            private boolean isWayPointPositionSet() {
+                return wayPointPosition != null;
+            }
+            private void searchAlongTheRoute(Route route, final String textToSearch) {
+                final Integer MAX_DETOUR_TIME = 1000;
+                final Integer QUERY_LIMIT = 10;
+                searchApi.alongRouteSearch(new AlongRouteSearchQueryBuilder(textToSearch, route.getCoordinates(), MAX_DETOUR_TIME).withLimit(QUERY_LIMIT).build())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new DisposableSingleObserver<AlongRouteSearchResponse>() {
+                            @Override
+                            public void onSuccess(AlongRouteSearchResponse response) {
+                                displaySearchResults(response.getResults());
+                            }
+
+                            private void displaySearchResults(List<AlongRouteSearchResult> results) {
+                                if (!results.isEmpty()) {
+                                    for (AlongRouteSearchResult result : results) {
+                                        createAndDisplayCustomMarker(result.getPosition(), result);
+                                    }
+                                    tomtomMap.zoomToAllMarkers();
+                                } else {
+                                    Toast.makeText(getContext(), String.format(getString(R.string.no_search_results), textToSearch), Toast.LENGTH_LONG).show();
+                                }
+                            }
+
+                            private void createAndDisplayCustomMarker(LatLng position, AlongRouteSearchResult result) {
+                                String address = result.getAddress().getFreeformAddress();
+                                String poiName = result.getPoi().getName();
+
+                                BaseMarkerBalloon markerBalloonData = new BaseMarkerBalloon();
+                                markerBalloonData.addProperty(getString(R.string.poi_name_key), poiName);
+                                markerBalloonData.addProperty(getString(R.string.address_key), address);
+
+                                MarkerBuilder markerBuilder = new MarkerBuilder(position)
+                                        .markerBalloon(markerBalloonData)
+                                        .shouldCluster(true);
+                                tomtomMap.addMarker(markerBuilder);
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                handleApiError(e);
+                            }
+                        });
+            }
+        };
+    }
 
     @Override
     public void onMapReady(@NonNull TomtomMap tomtomMap) {
