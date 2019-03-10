@@ -50,7 +50,6 @@ import com.tomtom.online.sdk.search.data.reversegeocoder.ReverseGeocoderSearchRe
 import com.upt.ac.campusfinderapp.R;
 
 import java.util.List;
-import java.util.Locale;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
@@ -74,7 +73,6 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
     private EditText editTextPois;
 
     private Integer STANDARD_RADIUS = 3 * 1000;
-    private Integer SEARCH_FUZZY_LVL_MIN = 2;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -121,51 +119,26 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
             }
 
             private void handleSearchClick(View v) {
-                if (isRouteSet()) {
-                    Optional<CharSequence> description = Optional.fromNullable(v.getContentDescription());
+                String textToSearch = editTextPois.getText().toString();
+                if(!textToSearch.isEmpty()) {
+                    if (isRouteSet()) {
+                        Optional<CharSequence> description = Optional.fromNullable(v.getContentDescription());
 
-                    if (description.isPresent()) {
-                        editTextPois.setText(description.get());
-                        v.setSelected(true);
-                    }
-                    if (isWayPointPositionSet()) {
-                        tomtomMap.clear();
-                        drawRoute(departurePosition, destinationPosition);
-                    }
-                    String textToSearch = editTextPois.getText().toString();
-                    if (!textToSearch.isEmpty()) {
+                        if (description.isPresent()) {
+                            editTextPois.setText(description.get());
+                            v.setSelected(true);
+                        }
+                        if (isWayPointPositionSet()) {
+                            tomtomMap.clear();
+                            drawRoute(departurePosition, destinationPosition);
+                        }
                         tomtomMap.removeMarkers();
                         searchAlongTheRoute(route, textToSearch);
                     }
-                }
-                else {
-                    Location userLocation = getLastKnownLocation();
-                    departurePosition = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
-                    String textToSearch = editTextPois.getText().toString();
-
-                    searchApi.search(new FuzzySearchQueryBuilder(textToSearch)
-                            .withPreciseness(new LatLngAcc(departurePosition, STANDARD_RADIUS)).build())
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(new DisposableSingleObserver<FuzzySearchResponse>(){
-                                @Override
-                                public void onSuccess(FuzzySearchResponse fuzzySearchResponse) {
-                                    Toast.makeText(getContext(), "Am reusit", Toast.LENGTH_SHORT).show();
-                                    createDestinationPositionBasedOnFuzzySearchResponse(fuzzySearchResponse.getResults());
-                                }
-
-                                @Override
-                                public void onError(Throwable e) {
-                                    Toast.makeText(getContext(), String.format(getString(R.string.no_search_results), textToSearch), Toast.LENGTH_LONG).show();
-                                }
-
-                                private void createDestinationPositionBasedOnFuzzySearchResponse(List<FuzzySearchResult> results) {
-                                    if(!results.isEmpty()) {
-                                        destinationPosition = results.get(0).getPosition();
-                                        drawRoute(departurePosition, destinationPosition);
-                                    }
-                                }
-                            });
+                    else {
+                        setLastKnownLocationAsDeparturePosition();
+                        searchNearMe(textToSearch);
+                    }
                 }
             }
 
@@ -217,6 +190,36 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
                             @Override
                             public void onError(Throwable e) {
                                 handleApiError(e);
+                            }
+                        });
+            }
+
+            private void setLastKnownLocationAsDeparturePosition() {
+                Location location = getLastKnownLocation();
+                departurePosition = new LatLng(location.getLatitude(), location.getLongitude());
+            }
+
+            private void searchNearMe(String textToSearch) {
+                searchApi.search(new FuzzySearchQueryBuilder(textToSearch)
+                        .withPreciseness(new LatLngAcc(departurePosition, STANDARD_RADIUS)).build())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new DisposableSingleObserver<FuzzySearchResponse>(){
+                            @Override
+                            public void onSuccess(FuzzySearchResponse fuzzySearchResponse) {
+                                drawRouteBasedOnFirstFuzzySearchResponse(fuzzySearchResponse.getResults());
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                Toast.makeText(getContext(), String.format(getString(R.string.no_search_results), textToSearch), Toast.LENGTH_LONG).show();
+                            }
+
+                            private void drawRouteBasedOnFirstFuzzySearchResponse(List<FuzzySearchResult> results) {
+                                if(!results.isEmpty()) {
+                                    destinationPosition = results.get(0).getPosition();
+                                    drawRoute(departurePosition, destinationPosition);
+                                }
                             }
                         });
             }
