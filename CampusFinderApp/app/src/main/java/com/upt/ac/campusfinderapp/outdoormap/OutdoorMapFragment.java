@@ -48,6 +48,7 @@ import com.tomtom.online.sdk.search.data.fuzzy.FuzzySearchResult;
 import com.tomtom.online.sdk.search.data.reversegeocoder.ReverseGeocoderSearchQueryBuilder;
 import com.tomtom.online.sdk.search.data.reversegeocoder.ReverseGeocoderSearchResponse;
 import com.upt.ac.campusfinderapp.R;
+import com.upt.ac.campusfinderapp.savedplaces.SavedPlaceRepository;
 
 import java.util.List;
 
@@ -252,6 +253,7 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
             @Override
             public void onBindView(View view, final Marker marker, BaseMarkerBalloon baseMarkerBalloon) {
                 Button btnAddWayPoint = view.findViewById(R.id.btn_balloon_waypoint);
+                Button btnSavePlace = view.findViewById(R.id.btn_balloon_save);
                 TextView textViewPoiName = view.findViewById(R.id.textview_balloon_poiname);
                 TextView textViewPoiAddress = view.findViewById(R.id.textview_balloon_poiaddress);
                 textViewPoiName.setText(baseMarkerBalloon.getStringProperty(getString(R.string.poi_name_key)));
@@ -267,6 +269,21 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
                         tomtomMap.clearRoute();
                         drawRouteWithWayPoints(departurePosition, destinationPosition, new LatLng[] {wayPointPosition});
                         marker.deselect();
+                    }
+                });
+
+                btnSavePlace.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        savePlace(marker, baseMarkerBalloon);
+                    }
+
+                    private void savePlace(Marker marker, BaseMarkerBalloon baseMarkerBalloon1) {
+                        LatLng latLng = marker.getPosition();
+                        String name = baseMarkerBalloon.getStringProperty(getString(R.string.poi_name_key));
+                        String address = baseMarkerBalloon.getStringProperty(getString(R.string.address_key));
+                        SavedPlaceRepository savedPlaceRepository = new SavedPlaceRepository(getContext());
+                        savedPlaceRepository.savePlace(name, address, latLng);
                     }
                 });
             }

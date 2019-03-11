@@ -5,14 +5,14 @@ import com.google.android.libraries.places.api.model.Place;
 public class SavedPlace {
 
     private String address;
-    private float latitude;
-    private float longitude;
+    private double latitude;
+    private double longitude;
     private String name;
     private String placeId;
 
     public SavedPlace() {}
 
-    public SavedPlace(String address, float latitude, float longitude, String name, String placeId) {
+    public SavedPlace(String address, double latitude, double longitude, String name, String placeId) {
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -20,12 +20,16 @@ public class SavedPlace {
         this.placeId = placeId;
     }
 
+    public SavedPlace(String address, double latitude, double longitude, String name) {
+        this(address, latitude, longitude, name, null);
+    }
+
     public SavedPlace(Place place) {
         placeId = place.getId();
         name = place.getName();
         address = place.getAddress();
-        latitude = (float) place.getLatLng().latitude;
-        longitude = (float) place.getLatLng().longitude;
+        latitude = place.getLatLng().latitude;
+        longitude = place.getLatLng().longitude;
     }
 
     public String getAddress() {
@@ -36,19 +40,19 @@ public class SavedPlace {
         this.address = address;
     }
 
-    public float getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(float latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
-    public float getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(float longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 
