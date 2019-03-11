@@ -1,14 +1,12 @@
 package com.upt.ac.campusfinderapp.model;
 
-import com.google.android.libraries.places.api.model.Place;
-
 public class SavedPlace {
-
+    
+    private String placeId;
+    private String name;
     private String address;
     private double latitude;
     private double longitude;
-    private String name;
-    private String placeId;
 
     public SavedPlace() {}
 
@@ -22,14 +20,6 @@ public class SavedPlace {
 
     public SavedPlace(String address, double latitude, double longitude, String name) {
         this(address, latitude, longitude, name, null);
-    }
-
-    public SavedPlace(Place place) {
-        placeId = place.getId();
-        name = place.getName();
-        address = place.getAddress();
-        latitude = place.getLatLng().latitude;
-        longitude = place.getLatLng().longitude;
     }
 
     public String getAddress() {
