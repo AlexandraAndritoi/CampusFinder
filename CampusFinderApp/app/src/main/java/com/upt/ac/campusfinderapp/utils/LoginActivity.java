@@ -38,7 +38,7 @@ public class LoginActivity extends AppCompatActivity {
 
         currentUserData = CurrentUserData.getInstance(this);
         if(currentUserData.getLoggingState()) {
-            goToMainActivity();
+            goToMenuActivity();
         }
 
         initFirebase();
@@ -76,7 +76,7 @@ public class LoginActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 // Successfully signed in
                 saveUserCredentials();
-                goToMainActivity();
+                goToMenuActivity();
 
             } else {
                 // Sign in failed. If response is null the user canceled the
@@ -96,7 +96,7 @@ public class LoginActivity extends AppCompatActivity {
         currentUserData.setEmail(user.getEmail());
     }
 
-    private void goToMainActivity() {
+    private void goToMenuActivity() {
         getLocationPermission();
         Intent intent = new Intent(LoginActivity.this, MenuActivity.class);
         startActivityForResult(intent, RC_SIGN_IN);
