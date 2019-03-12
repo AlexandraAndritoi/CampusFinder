@@ -12,6 +12,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.tomtom.online.sdk.common.location.LatLng;
 import com.upt.ac.campusfinderapp.model.SavedPlace;
+import com.upt.ac.campusfinderapp.utils.CurrentUserData;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,15 +32,15 @@ public class SavedPlaceRepository {
     public void savePlace(String name, String address, LatLng latLng) {
         SavedPlace place = new SavedPlace(address, latLng.getLatitude(), latLng.getLongitude(), name);
 
-        String key = mDatabase.child("").push().getKey();
+        String key = mDatabase.child("savedplace").push().getKey();
 
         Map<String, Object> childUpdates = new HashMap<>();
 
-        childUpdates.put("//" + key, place);
+        childUpdates.put("/savedplace/" + key, place);
 
         Map<String, Boolean> node = new HashMap<>();
         node.put(key, true);
-        childUpdates.put("//" + getUserId() + "/" + key, true);
+        childUpdates.put("/user_savedplaces/" + getUserId() + "/" + key, true);
 
         mDatabase.updateChildren(childUpdates)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -58,9 +59,6 @@ public class SavedPlaceRepository {
     }
 
     private String getUserId() {
-
-        SharedPreferences sp = context.getSharedPreferences("login", MODE_PRIVATE);
-
-        return sp.getString("id","");
+        return CurrentUserData.getInstance(context).getId();
     }
 }

@@ -24,6 +24,7 @@ import com.upt.ac.campusfinderapp.savedplaces.SavedPlacesFragment;
 import com.upt.ac.campusfinderapp.settings.SettingsActivity;
 import com.upt.ac.campusfinderapp.indoormap.IndoorMapFragment;
 import com.upt.ac.campusfinderapp.outdoormap.OutdoorMapFragment;
+import com.upt.ac.campusfinderapp.utils.CurrentUserData;
 
 public class MenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnFragmentInteractionListener {
@@ -66,16 +67,16 @@ public class MenuActivity extends AppCompatActivity
     }
 
     private void showUserDetails() {
-        SharedPreferences sp = getSharedPreferences("login", MODE_PRIVATE);
+        CurrentUserData currentUserData = CurrentUserData.getInstance(getApplicationContext());
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         View header = navigationView.getHeaderView(0);
 
         TextView userName = header.findViewById(R.id.userNameTextView);
-        userName.setText(sp.getString("username", ""));
+        userName.setText(currentUserData.getUsername());
 
         TextView userEmail = header.findViewById(R.id.userEmailTextView);
-        userEmail.setText(sp.getString("email", ""));
+        userEmail.setText(currentUserData.getEmail());
     }
 
     @Override

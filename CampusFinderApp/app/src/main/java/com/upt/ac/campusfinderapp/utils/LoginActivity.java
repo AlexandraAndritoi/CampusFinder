@@ -29,16 +29,15 @@ public class LoginActivity extends AppCompatActivity {
     private final String ACCESS_FINE_LOCATION = android.Manifest.permission.ACCESS_FINE_LOCATION;
     private final String ACCESS_COARSE_LOCATION = android.Manifest.permission.ACCESS_COARSE_LOCATION;
 
-    private SharedPreferences sharedPreferences;
+    private CurrentUserData currentUserData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        sharedPreferences = getSharedPreferences("login",MODE_PRIVATE);
-
-        if(sharedPreferences.getBoolean("logged",false)) {
+        currentUserData = CurrentUserData.getInstance(this);
+        if(currentUserData.getLoggingState()) {
             goToMainActivity();
         }
 
@@ -90,11 +89,11 @@ public class LoginActivity extends AppCompatActivity {
     @SuppressLint("CommitPrefEdits")
     private void saveUserCredentials() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        SharedPreferences sharedPreferences = getSharedPreferences("login",MODE_PRIVATE);
-        sharedPreferences.edit().putBoolean("logged",true).apply();
-        sharedPreferences.edit().putString("id",user.getUid()).apply();
-        sharedPreferences.edit().putString("username",user.getDisplayName()).apply();
-        sharedPreferences.edit().putString("email",user.getEmail()).apply();
+        currentUserData = CurrentUserData.getInstance(this);
+        currentUserData.setLoggingState(true);
+        currentUserData.setId(user.getUid());
+        currentUserData.setUsername(user.getDisplayName());
+        currentUserData.setEmail(user.getEmail());
     }
 
     private void goToMainActivity() {
