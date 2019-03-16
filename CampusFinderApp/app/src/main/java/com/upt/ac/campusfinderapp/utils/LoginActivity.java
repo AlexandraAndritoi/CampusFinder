@@ -14,12 +14,8 @@ import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-//import com.upt.ac.campusfinderapp.Manifest;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.upt.ac.campusfinderapp.R;
 import com.upt.ac.campusfinderapp.menu.MenuActivity;
-import com.upt.ac.campusfinderapp.model.User;
 
 import java.util.Arrays;
 import java.util.List;
