@@ -278,7 +278,7 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
                         savePlace(marker, baseMarkerBalloon);
                     }
 
-                    private void savePlace(Marker marker, BaseMarkerBalloon baseMarkerBalloon1) {
+                    private void savePlace(Marker marker, BaseMarkerBalloon baseMarkerBalloon) {
                         LatLng latLng = marker.getPosition();
                         String name = baseMarkerBalloon.getStringProperty(getString(R.string.poi_name_key));
                         String address = baseMarkerBalloon.getStringProperty(getString(R.string.address_key));
