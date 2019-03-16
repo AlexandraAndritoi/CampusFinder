@@ -40,7 +40,7 @@ public class SavedPlaceRepository {
 
         Map<String, Boolean> node = new HashMap<>();
         node.put(key, true);
-        childUpdates.put("/user_savedplaces/" + getUserId() + "/" + key, true);
+        childUpdates.put("/user_savedplaces/" + getUserId() + "/" + key, place);
 
         mDatabase.updateChildren(childUpdates)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {

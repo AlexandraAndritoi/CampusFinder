@@ -26,6 +26,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.upt.ac.campusfinderapp.R;
 import com.upt.ac.campusfinderapp.model.SavedPlace;
+import com.upt.ac.campusfinderapp.utils.CurrentUserData;
 
 import java.util.ArrayList;
 
@@ -66,7 +67,8 @@ public class SavedPlacesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         savedPlaces = new ArrayList<>();
-        mDatabaseReference = FirebaseDatabase.getInstance().getReference("savedplace");
+        String currentUserId = CurrentUserData.getInstance(getContext()).getId();
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference("user_savedplaces/" + currentUserId + "/");
     }
 
     @Override
