@@ -92,12 +92,16 @@ public class LoginActivity extends AppCompatActivity {
     @SuppressLint("CommitPrefEdits")
     private void saveUserCredentials() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        saveUserToAppSharedPreferences(user);
+        saveUserToFirebaseDatabase(user);
+    }
+
+    private void saveUserToAppSharedPreferences(FirebaseUser user) {
         currentUserData = CurrentUserData.getInstance(this);
         currentUserData.setLoggingState(true);
         currentUserData.setId(user.getUid());
         currentUserData.setUsername(user.getDisplayName());
         currentUserData.setEmail(user.getEmail());
-        saveUserToFirebaseDatabase(user);
     }
 
     private void saveUserToFirebaseDatabase(FirebaseUser user) {
