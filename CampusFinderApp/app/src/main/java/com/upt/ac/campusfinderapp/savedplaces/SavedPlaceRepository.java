@@ -31,17 +31,10 @@ public class SavedPlaceRepository {
 
     public void savePlace(String name, String address, LatLng latLng) {
         SavedPlace place = new SavedPlace(address, latLng.getLatitude(), latLng.getLongitude(), name);
-
-        String key = mDatabase.child("savedplace").push().getKey();
-
+        String path = "/user_savedplaces/" + getUserId();
+        String key = mDatabase.child(path).push().getKey();
         Map<String, Object> childUpdates = new HashMap<>();
-
-        childUpdates.put("/savedplace/" + key, place);
-
-        Map<String, Boolean> node = new HashMap<>();
-        node.put(key, true);
-        childUpdates.put("/user_savedplaces/" + getUserId() + "/" + key, place);
-
+        childUpdates.put(path + "/" + key, place);
         mDatabase.updateChildren(childUpdates)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
