@@ -10,9 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/spacing_small"
-        android:layout_marginTop="@dimen/spacing_small"
         android:layout_marginEnd="@dimen/spacing_small"
-        android:layout_marginBottom="@dimen/spacing_small"
         android:background="@drawable/bg_balloon_button"
         android:paddingLeft="@dimen/spacing_small"
         android:paddingTop="@dimen/spacing_xtiny"
@@ -22,11 +20,9 @@
         android:textAlignment="center"
         android:textSize="@dimen/text_size_small"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/btn_balloon_save"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btn_balloon_save"
         app:layout_constraintTop_toBottomOf="@+id/textview_balloon_poiaddress" />
 
     <Button
@@ -34,9 +30,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/spacing_small"
-        android:layout_marginTop="@dimen/spacing_small"
         android:layout_marginEnd="@dimen/spacing_small"
-        android:layout_marginBottom="@dimen/spacing_small"
         android:background="@drawable/bg_balloon_button"
         android:paddingLeft="@dimen/spacing_small"
         android:paddingTop="@dimen/spacing_xtiny"
@@ -46,13 +40,10 @@
         android:textAlignment="center"
         android:textSize="@dimen/text_size_small"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_balloon_waypoint"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/btn_balloon_waypoint"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textview_balloon_poiaddress"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toBottomOf="@+id/textview_balloon_poiaddress" />
 
     <TextView
         android:id="@+id/textview_balloon_poiname"
