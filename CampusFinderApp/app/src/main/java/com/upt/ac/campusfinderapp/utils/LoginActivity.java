@@ -105,9 +105,11 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void saveUserToFirebaseDatabase(FirebaseUser user) {
-        User currentUser = new User(user.getDisplayName(), user.getEmail());
-        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("user/" + user.getUid());
-        mDatabase.setValue(currentUser);
+//        User currentUser = new User(user.getDisplayName(), user.getEmail());
+//        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("user/" + user.getUid());
+//        mDatabase.setValue(currentUser);
+        UserRepository userRepository = new UserRepository();
+        userRepository.saveUser(user.getUid(), user.getDisplayName(), user.getEmail());
     }
 
     private void goToMenuActivity() {
