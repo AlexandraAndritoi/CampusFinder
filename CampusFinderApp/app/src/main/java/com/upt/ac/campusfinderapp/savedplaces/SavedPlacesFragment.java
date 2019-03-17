@@ -118,7 +118,7 @@ public class SavedPlacesFragment extends Fragment {
                         savedPlaces.add(savedPlace);
                     }
 
-                    SavedPlaceRecyclerAdapter savedPlaceRecyclerAdapter = new SavedPlaceRecyclerAdapter(savedPlaces);
+                    SavedPlaceRecyclerAdapter savedPlaceRecyclerAdapter = new SavedPlaceRecyclerAdapter(getContext(), savedPlaces);
                     mSavedPlacesRecyclerView.setAdapter(savedPlaceRecyclerAdapter);
                     savedPlaceRecyclerAdapter.notifyDataSetChanged();
                 }

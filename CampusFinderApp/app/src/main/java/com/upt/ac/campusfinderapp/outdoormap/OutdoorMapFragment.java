@@ -49,6 +49,7 @@ import com.tomtom.online.sdk.search.data.reversegeocoder.ReverseGeocoderSearchQu
 import com.tomtom.online.sdk.search.data.reversegeocoder.ReverseGeocoderSearchResponse;
 import com.upt.ac.campusfinderapp.R;
 import com.upt.ac.campusfinderapp.savedplaces.SavedPlaceRepository;
+import com.upt.ac.campusfinderapp.utils.CurrentUserData;
 
 import java.util.List;
 
@@ -88,6 +89,7 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
         initTomTomServices();
         initUIViews(v);
         setupUIViewListeners();
+        checkBundleForPlaceToSearch();
         return v;
     }
 
@@ -109,6 +111,18 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
     private void setupUIViewListeners() {
         View.OnClickListener searchButtonListener = getSearchButtonListener();
         btnSearch.setOnClickListener(searchButtonListener);
+    }
+
+    private void checkBundleForPlaceToSearch() {
+        if(getArguments() == null) {
+            return;
+        }
+        String placeName = getArguments().getString("Place name");
+        if(placeName == null) {
+            return;
+        }
+        setLastKnownLocationAsDeparturePosition();
+        searchNearMe(placeName);
     }
 
     @NonNull
@@ -205,12 +219,12 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
                 setLastKnownLocationAsDeparturePosition();
                 searchNearMe(textToSearch);
             }
-
-            private void setLastKnownLocationAsDeparturePosition() {
-                Location location = getLastKnownLocation();
-                departurePosition = new LatLng(location.getLatitude(), location.getLongitude());
-            }
         };
+    }
+
+    private void setLastKnownLocationAsDeparturePosition() {
+        Location location = getLastKnownLocation();
+        departurePosition = new LatLng(location.getLatitude(), location.getLongitude());
     }
 
     private void searchNearMe(String textToSearch) {
@@ -396,7 +410,17 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
         }
     }
 
-    private Location getLastKnownLocation() { return tomtomMap.getUserLocation(); }
+    private Location getLastKnownLocation() {
+        Location location;
+        if(tomtomMap != null) {
+            location = tomtomMap.getUserLocation();
+            CurrentUserData.getInstance(getContext()).setCurrentLocation(location);
+        }
+        else {
+            location = CurrentUserData.getInstance(getContext()).getCurrentLocation();
+        }
+        return location;
+    }
 
     private boolean isDestinationPositionSet() {
         return destinationPosition != null;
