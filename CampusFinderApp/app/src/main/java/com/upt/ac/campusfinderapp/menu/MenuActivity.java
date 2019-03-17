@@ -1,7 +1,6 @@
 package com.upt.ac.campusfinderapp.menu;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -63,7 +62,7 @@ public class MenuActivity extends AppCompatActivity
 
     private void setOutdoorMapFragmentAsDefault() {
         fragment = new OutdoorMapFragment();
-        replaceFragment();
+        startFragment();
     }
 
     private void showUserDetails() {
@@ -136,7 +135,7 @@ public class MenuActivity extends AppCompatActivity
         }
 
         if(fragment != null) {
-            replaceFragment();
+            startFragment();
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -144,7 +143,7 @@ public class MenuActivity extends AppCompatActivity
         return true;
     }
 
-    private void replaceFragment() {
+    private void startFragment() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction ft = fragmentManager.beginTransaction();
 

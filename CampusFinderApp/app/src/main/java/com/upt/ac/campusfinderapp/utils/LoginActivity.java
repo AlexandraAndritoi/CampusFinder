@@ -1,9 +1,7 @@
 package com.upt.ac.campusfinderapp.utils;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -37,7 +35,7 @@ public class LoginActivity extends AppCompatActivity {
 
         currentUserData = CurrentUserData.getInstance(this);
         if(currentUserData.getLoggingState()) {
-            goToMenuActivity();
+            startMenuActivity();
         }
 
         initFirebase();
@@ -75,7 +73,7 @@ public class LoginActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 // Successfully signed in
                 saveUserCredentials();
-                goToMenuActivity();
+                startMenuActivity();
 
             } else {
                 // Sign in failed. If response is null the user canceled the
@@ -105,7 +103,7 @@ public class LoginActivity extends AppCompatActivity {
         userRepository.saveUser(user.getUid(), user.getDisplayName(), user.getEmail());
     }
 
-    private void goToMenuActivity() {
+    private void startMenuActivity() {
         getLocationPermission();
         Intent intent = new Intent(LoginActivity.this, MenuActivity.class);
         startActivityForResult(intent, RC_SIGN_IN);
