@@ -62,6 +62,8 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
 
     private TomtomMap tomtomMap;
 
+    private SearchService searchService;
+
     private SearchApi searchApi;
     private RoutingApi routingApi;
     private Route route;
@@ -97,6 +99,7 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
         MapFragment mapFragment = (MapFragment) getChildFragmentManager().findFragmentById(R.id.tomtom_map);
         mapFragment.getAsyncMap(this);
 
+        searchService = new SearchService(getContext());
         searchApi = OnlineSearchApi.create(getContext());
         routingApi = OnlineRoutingApi.create(getContext());
     }
@@ -109,7 +112,7 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
     }
 
     private void setupUIViewListeners() {
-        View.OnClickListener searchButtonListener = getSearchButtonListener();
+        View.OnClickListener searchButtonListener = getSearchButtonOnClickListener();
         btnSearch.setOnClickListener(searchButtonListener);
     }
 
@@ -126,7 +129,7 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
     }
 
     @NonNull
-    private View.OnClickListener getSearchButtonListener() {
+    private View.OnClickListener getSearchButtonOnClickListener() {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -172,52 +175,51 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
             }
 
             private void searchAlongTheRoute(Route route, final String textToSearch) {
-                final Integer MAX_DETOUR_TIME = 1000;
-                final Integer QUERY_LIMIT = 10;
-                searchApi.alongRouteSearch(new AlongRouteSearchQueryBuilder(textToSearch, route.getCoordinates(), MAX_DETOUR_TIME).withLimit(QUERY_LIMIT).build())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new DisposableSingleObserver<AlongRouteSearchResponse>() {
-                            @Override
-                            public void onSuccess(AlongRouteSearchResponse response) {
-                                displaySearchResults(response.getResults());
-                            }
-
-                            private void displaySearchResults(List<AlongRouteSearchResult> results) {
-                                if (!results.isEmpty()) {
-                                    for (AlongRouteSearchResult result : results) {
-                                        createAndDisplayCustomMarker(result.getPosition(), result);
-                                    }
-                                    tomtomMap.zoomToAllMarkers();
-                                } else {
-                                    handleNoSearchResultError(textToSearch);
-                                }
-                            }
-
-                            private void createAndDisplayCustomMarker(LatLng position, AlongRouteSearchResult result) {
-                                String address = result.getAddress().getFreeformAddress();
-                                String poiName = result.getPoi().getName();
-
-                                BaseMarkerBalloon markerBalloonData = new BaseMarkerBalloon();
-                                markerBalloonData.addProperty(getString(R.string.poi_name_key), poiName);
-                                markerBalloonData.addProperty(getString(R.string.address_key), address);
-
-                                MarkerBuilder markerBuilder = new MarkerBuilder(position)
-                                        .markerBalloon(markerBalloonData)
-                                        .shouldCluster(true);
-                                tomtomMap.addMarker(markerBuilder);
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                handleApiError(e);
-                            }
-                        });
+                searchService.searchAlongTheRoute(route, getAlongRouteSearchObserver(textToSearch), textToSearch);
             }
 
             private void searchWithoutRoute() {
                 setLastKnownLocationAsDeparturePosition();
                 searchNearMe(textToSearch);
+            }
+        };
+    }
+
+    private DisposableSingleObserver<AlongRouteSearchResponse> getAlongRouteSearchObserver(String textToSearch) {
+        return new DisposableSingleObserver<AlongRouteSearchResponse>() {
+            @Override
+            public void onSuccess(AlongRouteSearchResponse response) {
+                displaySearchResults(response.getResults());
+            }
+
+            private void displaySearchResults(List<AlongRouteSearchResult> results) {
+                if (!results.isEmpty()) {
+                    for (AlongRouteSearchResult result : results) {
+                        createAndDisplayCustomMarker(result.getPosition(), result);
+                    }
+                    tomtomMap.zoomToAllMarkers();
+                } else {
+                    handleNoSearchResultError(textToSearch);
+                }
+            }
+
+            private void createAndDisplayCustomMarker(LatLng position, AlongRouteSearchResult result) {
+                String address = result.getAddress().getFreeformAddress();
+                String poiName = result.getPoi().getName();
+
+                BaseMarkerBalloon markerBalloonData = new BaseMarkerBalloon();
+                markerBalloonData.addProperty(getString(R.string.poi_name_key), poiName);
+                markerBalloonData.addProperty(getString(R.string.address_key), address);
+
+                MarkerBuilder markerBuilder = new MarkerBuilder(position)
+                        .markerBalloon(markerBalloonData)
+                        .shouldCluster(true);
+                tomtomMap.addMarker(markerBuilder);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                handleApiError(e);
             }
         };
     }
