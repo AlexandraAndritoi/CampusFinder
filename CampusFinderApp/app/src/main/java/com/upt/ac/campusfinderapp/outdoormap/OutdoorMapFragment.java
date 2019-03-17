@@ -203,39 +203,39 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
 
             private void searchWithoutRoute() {
                 setLastKnownLocationAsDeparturePosition();
-                searchNearMe();
+                searchNearMe(textToSearch);
             }
 
             private void setLastKnownLocationAsDeparturePosition() {
                 Location location = getLastKnownLocation();
                 departurePosition = new LatLng(location.getLatitude(), location.getLongitude());
             }
-
-            private void searchNearMe() {
-                searchApi.search(new FuzzySearchQueryBuilder(textToSearch)
-                        .withPreciseness(new LatLngAcc(departurePosition, STANDARD_RADIUS)).build())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new DisposableSingleObserver<FuzzySearchResponse>(){
-                            @Override
-                            public void onSuccess(FuzzySearchResponse fuzzySearchResponse) {
-                                drawRouteBasedOnFirstFuzzySearchResponse(fuzzySearchResponse.getResults());
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                handleNoSearchResultError(textToSearch);
-                            }
-
-                            private void drawRouteBasedOnFirstFuzzySearchResponse(List<FuzzySearchResult> results) {
-                                if(!results.isEmpty()) {
-                                    destinationPosition = results.get(0).getPosition();
-                                    drawRoute(departurePosition, destinationPosition);
-                                }
-                            }
-                        });
-            }
         };
+    }
+
+    private void searchNearMe(String textToSearch) {
+        searchApi.search(new FuzzySearchQueryBuilder(textToSearch)
+                .withPreciseness(new LatLngAcc(departurePosition, STANDARD_RADIUS)).build())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableSingleObserver<FuzzySearchResponse>(){
+                    @Override
+                    public void onSuccess(FuzzySearchResponse fuzzySearchResponse) {
+                        drawRouteBasedOnFirstFuzzySearchResponse(fuzzySearchResponse.getResults());
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        handleNoSearchResultError(textToSearch);
+                    }
+
+                    private void drawRouteBasedOnFirstFuzzySearchResponse(@NonNull List<FuzzySearchResult> results) {
+                        if(!results.isEmpty()) {
+                            destinationPosition = results.get(0).getPosition();
+                            drawRoute(departurePosition, destinationPosition);
+                        }
+                    }
+                });
     }
 
     @Override
