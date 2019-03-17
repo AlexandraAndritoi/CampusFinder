@@ -1,7 +1,6 @@
 package com.upt.ac.campusfinderapp.savedplaces;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
@@ -16,8 +15,6 @@ import com.upt.ac.campusfinderapp.utils.CurrentUserData;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import static android.content.Context.MODE_PRIVATE;
 
 public class SavedPlaceRepository {
 
