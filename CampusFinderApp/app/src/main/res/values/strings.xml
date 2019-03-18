@@ -126,6 +126,8 @@
     <!-- Keys -->
     <string name="place_name">Place name</string>
 
+    <!-- Firebase paths -->
+    <string name="user_savedplaces">/user_savedplaces/%1$s/</string>
 
 
 </resources>

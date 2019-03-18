@@ -62,7 +62,7 @@ public class SavedPlacesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         savedPlaces = new ArrayList<>();
-        String path = "user_savedplaces/" + CurrentUserData.getInstance(getContext()).getId() + "/";
+        String path = getString(R.string.user_savedplaces, CurrentUserData.getInstance(getContext()).getId());
         mDatabaseReference = FirebaseDatabase.getInstance().getReference(path);
     }
 

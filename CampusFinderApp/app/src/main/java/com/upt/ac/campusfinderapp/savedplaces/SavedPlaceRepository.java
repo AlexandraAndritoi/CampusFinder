@@ -10,6 +10,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.tomtom.online.sdk.common.location.LatLng;
+import com.upt.ac.campusfinderapp.R;
 import com.upt.ac.campusfinderapp.model.SavedPlace;
 import com.upt.ac.campusfinderapp.utils.CurrentUserData;
 
@@ -28,7 +29,7 @@ public class SavedPlaceRepository {
 
     public void savePlace(String name, String address, LatLng latLng) {
         SavedPlace place = new SavedPlace(address, latLng.getLatitude(), latLng.getLongitude(), name);
-        String path = "/user_savedplaces/" + getUserId();
+        String path = context.getString(R.string.user_savedplaces, getUserId());
         String key = mDatabase.child(path).push().getKey();
         Map<String, Object> childUpdates = new HashMap<>();
         childUpdates.put(path + "/" + key, place);
