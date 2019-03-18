@@ -42,7 +42,7 @@ public class SavedPlaceRecyclerAdapter extends RecyclerView.Adapter<SavedPlacesV
             private void startOutdoorMapFragmentWithSavedPlace(String name) {
                 OutdoorMapFragment fragment = new OutdoorMapFragment();
                 Bundle args = new Bundle();
-                args.putString("Place name", name);
+                args.putString(context.getString(R.string.place_name), name);
                 fragment.setArguments(args);
                 ((AppCompatActivity)context).getSupportFragmentManager().beginTransaction().replace(R.id.screen_area, fragment).commit();
             }

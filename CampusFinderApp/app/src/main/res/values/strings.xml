@@ -121,4 +121,11 @@
     <string name="no_search_results">No search results for \'%1$s\'. Please try another search term.</string>
     <string name="add_to_my_route">Add to my route</string>
     <string name="save_to_my_list">Save to my list</string>
+
+
+    <!-- Keys -->
+    <string name="place_name">Place name</string>
+
+
+
 </resources>

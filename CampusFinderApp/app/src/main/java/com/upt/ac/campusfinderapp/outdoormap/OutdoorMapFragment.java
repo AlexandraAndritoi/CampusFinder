@@ -120,7 +120,7 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
         if(getArguments() == null) {
             return;
         }
-        String placeName = getArguments().getString("Place name");
+        String placeName = getArguments().getString(getString(R.string.place_name));
         if(placeName == null) {
             return;
         }
