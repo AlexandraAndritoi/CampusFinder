@@ -1,8 +1,10 @@
 package com.upt.ac.campusfinderapp.menu;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -16,7 +18,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.upt.ac.campusfinderapp.R;
 import com.upt.ac.campusfinderapp.savedplaces.OnFragmentInteractionListener;
 import com.upt.ac.campusfinderapp.savedplaces.SavedPlacesFragment;
@@ -24,6 +30,7 @@ import com.upt.ac.campusfinderapp.settings.SettingsActivity;
 import com.upt.ac.campusfinderapp.indoormap.IndoorMapFragment;
 import com.upt.ac.campusfinderapp.outdoormap.OutdoorMapFragment;
 import com.upt.ac.campusfinderapp.utils.CurrentUserData;
+import com.upt.ac.campusfinderapp.utils.LoginActivity;
 
 public class MenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnFragmentInteractionListener {
@@ -128,10 +135,9 @@ public class MenuActivity extends AppCompatActivity
         } else if (id == R.id.nav_saved_places) {
             fragment = new SavedPlacesFragment();
         } else if (id == R.id.nav_manage) {
-            Intent intent = new Intent(this, SettingsActivity.class);
-            startActivity(intent);
+            startActivity(SettingsActivity.class);
         } else if (id == R.id.nav_log_out) {
-
+            logOut();
         }
 
         if(fragment != null) {
@@ -141,6 +147,28 @@ public class MenuActivity extends AppCompatActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void logOut() {
+        AuthUI.getInstance()
+                .signOut(this)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Toast.makeText(getApplicationContext(), "Log out", Toast.LENGTH_SHORT).show();
+                        setCurrentUserLoggingStateToFalse();
+                        startActivity(LoginActivity.class);
+                    }
+                });
+    }
+
+    private void setCurrentUserLoggingStateToFalse() {
+        CurrentUserData.getInstance(getApplicationContext()).setLoggingState(false);
+    }
+
+    public void startActivity(Class activity) {
+        Intent intent = new Intent(this, activity);
+        startActivity(intent);
     }
 
     private void startFragment() {
