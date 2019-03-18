@@ -127,6 +127,7 @@
     <!-- Error Messages -->
     <string name="general_error_message">An error occurred</string>
     <string name="error_saving_place">An error occurred while saving</string>
+    <string name="on_fragment_intercation_listener">must implement OnFragmentInteractionListener</string>
 
     <!-- Keys -->
     <string name="place_name">Place name</string>
