@@ -1,6 +1,5 @@
 package com.upt.ac.campusfinderapp.menu;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -120,12 +119,6 @@ public class MenuActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-
-//        Fragment fragment = null;
-
-//        fragment = new OutdoorMapFragment();
-
         int id = item.getItemId();
 
         if (id == R.id.nav_outdoor_map) {
