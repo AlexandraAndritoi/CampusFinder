@@ -121,8 +121,12 @@
     <string name="add_to_my_route">Add to my route</string>
     <string name="save_to_my_list">Save to my list</string>
 
+    <!-- Success Messages -->
+    <string name="place_saved_successffully">Place saved successfully</string>
+
     <!-- Error Messages -->
     <string name="general_error_message">An error occurred</string>
+    <string name="error_saving_place">An error occurred while saving</string>
 
     <!-- Keys -->
     <string name="place_name">Place name</string>

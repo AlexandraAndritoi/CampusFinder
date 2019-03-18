@@ -37,13 +37,13 @@ public class SavedPlaceRepository {
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            Toast.makeText(context, "Place saved successfully", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, context.getString(R.string.place_saved_successffully), Toast.LENGTH_SHORT).show();
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(context, "An error occurred while saving", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, context.getString(R.string.error_saving_place), Toast.LENGTH_SHORT).show();
                             Log.e("Update Children ", e.getMessage());
                         }
                     });
