@@ -97,11 +97,11 @@ public class SavedPlacesFragment extends Fragment {
         mSavedPlacesRecyclerView = view.findViewById(R.id.saved_places_recycler_view);
         mSavedPlacesRecyclerView.setHasFixedSize(true);
         mSavedPlacesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        firebaseSearch("");
+        firebaseSearch(getString(R.string.empty_string));
     }
 
     private void firebaseSearch(String string) {
-        Query query = mDatabaseReference.orderByChild("name").startAt(string).endAt(string + "\uf8ff");
+        Query query = mDatabaseReference.orderByChild(getString(R.string.name)).startAt(string).endAt(string + getString(R.string.uf8ff));
 
         query.addValueEventListener(new ValueEventListener() {
             @Override

@@ -107,10 +107,9 @@
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="title_activity_maps">Map</string>
 
-    <!---->
+    <!-- SavedPlace Fragment Strings-->
     <string name="search_here">Search here</string>
     <string name="go_to">Go to</string>
-    <string name="general_error_message">An error occurred</string>
 
     <!-- tomtom -->
     <string name="geocode_no_results">No geocoder results. Choose different location and try again.</string>
@@ -122,12 +121,20 @@
     <string name="add_to_my_route">Add to my route</string>
     <string name="save_to_my_list">Save to my list</string>
 
+    <!-- Error Messages -->
+    <string name="general_error_message">An error occurred</string>
 
     <!-- Keys -->
     <string name="place_name">Place name</string>
 
-    <!-- Firebase paths -->
+    <!-- Firebase Paths -->
     <string name="user_savedplaces">/user_savedplaces/%1$s/</string>
+    <string name="name">name</string>
+
+    <!-- Others -->
+    <string name="empty_string"/>
+    <string name="uf8ff">\uf8ff</string>
+
 
 
 </resources>
