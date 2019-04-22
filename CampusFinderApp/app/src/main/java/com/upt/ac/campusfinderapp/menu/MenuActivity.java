@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.upt.ac.campusfinderapp.R;
 import com.upt.ac.campusfinderapp.savedplaces.OnFragmentInteractionListener;
 import com.upt.ac.campusfinderapp.savedplaces.SavedPlacesFragment;
@@ -31,8 +32,12 @@ import com.upt.ac.campusfinderapp.outdoormap.OutdoorMapFragment;
 import com.upt.ac.campusfinderapp.utils.CurrentUserData;
 import com.upt.ac.campusfinderapp.utils.LoginActivity;
 
+import io.mapwize.mapwizecomponents.ui.MapwizeFragment;
+import io.mapwize.mapwizeformapbox.api.MapwizeObject;
+import io.mapwize.mapwizeformapbox.map.MapwizePlugin;
+
 public class MenuActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, OnFragmentInteractionListener, MapwizeFragment.OnFragmentInteractionListener {
 
     private Fragment fragment;
 
@@ -181,5 +186,25 @@ public class MenuActivity extends AppCompatActivity
     @Override
     public void onFragmentInteraction(Uri uri) {
         // TODO
+    }
+
+    @Override
+    public void onMenuButtonClick() {
+
+    }
+
+    @Override
+    public void onInformationButtonClick(MapwizeObject mapwizeObject) {
+
+    }
+
+    @Override
+    public void onFragmentReady(MapboxMap mapboxMap, MapwizePlugin mapwizePlugin) {
+
+    }
+
+    @Override
+    public void onFollowUserButtonClickWithoutLocation() {
+
     }
 }
