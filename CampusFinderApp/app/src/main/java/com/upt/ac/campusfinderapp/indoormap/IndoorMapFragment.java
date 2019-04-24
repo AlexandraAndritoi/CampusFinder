@@ -34,6 +34,7 @@ public class IndoorMapFragment extends Fragment implements MapwizeFragment.OnFra
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         MapOptions options = new MapOptions.Builder()
+                                .restrictContentToVenue("")
                                 .centerOnVenue("")
                                 .build();
         MapwizeFragmentUISettings settings = new MapwizeFragmentUISettings.Builder()
