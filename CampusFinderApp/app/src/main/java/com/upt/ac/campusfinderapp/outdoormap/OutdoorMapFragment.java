@@ -258,7 +258,9 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
     public void onMapReady(@NonNull TomtomMap tomtomMap) {
         this.tomtomMap = tomtomMap;
         this.tomtomMap.setMyLocationEnabled(true);
-        this.tomtomMap.getUserLocation();
+        Location location = this.tomtomMap.getUserLocation();
+        if(location != null)
+            saveLastKnownLocation(this.tomtomMap.getUserLocation());
         this.tomtomMap.addOnMapLongClickListener(this);
         this.tomtomMap.getMarkerSettings().setMarkersClustering(true);
         this.tomtomMap.getMarkerSettings().setMarkerBalloonViewAdapter(createCustomViewAdapter());
@@ -416,12 +418,16 @@ public class OutdoorMapFragment extends Fragment implements OnMapReadyCallback,
         Location location;
         if(tomtomMap != null) {
             location = tomtomMap.getUserLocation();
-            CurrentUserData.getInstance(getContext()).setCurrentLocation(location);
+            saveLastKnownLocation(location);
         }
         else {
             location = CurrentUserData.getInstance(getContext()).getCurrentLocation();
         }
         return location;
+    }
+
+    private void saveLastKnownLocation(Location location) {
+        CurrentUserData.getInstance(getContext()).setCurrentLocation(location);
     }
 
     private boolean isDestinationPositionSet() {
