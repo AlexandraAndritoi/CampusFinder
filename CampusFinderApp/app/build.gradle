@@ -61,6 +61,10 @@ dependencies {
     implementation 'com.mapbox.mapboxsdk:mapbox-android-services:2.2.9@aar'
     implementation 'com.github.indoorlocation:manual-indoor-location-provider-android:1.0.0'
     implementation "com.github.Mapwize:mapwize-ui-android:1.2.0"
+
+    implementation 'com.github.IndoorLocation:indoor-location-android:1.0.5'
+    implementation group: "com.navisens", name: "motiondnaapi", version: "1.4.0", changing: true
+    implementation('io.mapwize.indoormaps:MapwizeForMapbox:1.5.1')
 }
 apply plugin: 'com.google.gms.google-services'
 
