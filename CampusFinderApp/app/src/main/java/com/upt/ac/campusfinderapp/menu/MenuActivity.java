@@ -1,12 +1,16 @@
 package com.upt.ac.campusfinderapp.menu;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -24,6 +28,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.upt.ac.campusfinderapp.R;
+import com.upt.ac.campusfinderapp.navisens.NavisensIndoorLocationProvider;
 import com.upt.ac.campusfinderapp.savedplaces.OnFragmentInteractionListener;
 import com.upt.ac.campusfinderapp.savedplaces.SavedPlacesFragment;
 import com.upt.ac.campusfinderapp.settings.SettingsActivity;
@@ -32,7 +37,10 @@ import com.upt.ac.campusfinderapp.outdoormap.OutdoorMapFragment;
 import com.upt.ac.campusfinderapp.utils.CurrentUserData;
 import com.upt.ac.campusfinderapp.utils.LoginActivity;
 
+import io.indoorlocation.core.IndoorLocation;
+import io.indoorlocation.manual.ManualIndoorLocationProvider;
 import io.mapwize.mapwizecomponents.ui.MapwizeFragment;
+import io.mapwize.mapwizeformapbox.api.LatLngFloor;
 import io.mapwize.mapwizeformapbox.api.MapwizeObject;
 import io.mapwize.mapwizeformapbox.map.MapwizePlugin;
 
@@ -40,6 +48,13 @@ public class MenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnFragmentInteractionListener, MapwizeFragment.OnFragmentInteractionListener {
 
     private Fragment fragment;
+
+    private MapwizePlugin mapwizePlugin;
+    private ManualIndoorLocationProvider manualIndoorLocationProvider;
+    private NavisensIndoorLocationProvider navisensIndoorLocationProvider;
+
+    private static final String NAVISENS_API_KEY = "";
+    private static final int REQUEST_LOCATION_PERMISSION = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -200,7 +215,37 @@ public class MenuActivity extends AppCompatActivity
 
     @Override
     public void onFragmentReady(MapboxMap mapboxMap, MapwizePlugin mapwizePlugin) {
+        this.mapwizePlugin = mapwizePlugin;
 
+        mapwizePlugin.setOnDidLoadListener(new MapwizePlugin.OnDidLoadListener() {
+            @Override
+            public void didLoad(MapwizePlugin plugin) { }});
+
+
+                this.mapwizePlugin.setOnDidLoadListener( plugin -> {
+            requestLocationPermission();
+        });
+        this.mapwizePlugin.addOnClickListener(clickEvent -> {
+            LatLngFloor latLngFloor = clickEvent.getLatLngFloor();
+            IndoorLocation indoorLocation = new IndoorLocation(manualIndoorLocationProvider.getName(), latLngFloor.getLatitude(), latLngFloor.getLongitude(), latLngFloor.getFloor(), System.currentTimeMillis());
+            manualIndoorLocationProvider.dispatchIndoorLocationChange(indoorLocation);
+        });
+    }
+
+    private void requestLocationPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
+        } else {
+            setupLocationProvider();
+        }
+    }
+
+    private void setupLocationProvider() {
+        IndoorLocation manualIndoorLocation = new IndoorLocation("Manual", 45.747338, 21.226126, (double)0, System.currentTimeMillis());
+        manualIndoorLocationProvider = new ManualIndoorLocationProvider();
+        manualIndoorLocationProvider.setIndoorLocation(manualIndoorLocation);
+        navisensIndoorLocationProvider = new NavisensIndoorLocationProvider(this, NAVISENS_API_KEY, manualIndoorLocationProvider);
+        mapwizePlugin.setLocationProvider(navisensIndoorLocationProvider);
     }
 
     @Override
