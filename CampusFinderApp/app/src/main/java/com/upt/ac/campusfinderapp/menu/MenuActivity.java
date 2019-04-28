@@ -216,13 +216,7 @@ public class MenuActivity extends AppCompatActivity
     @Override
     public void onFragmentReady(MapboxMap mapboxMap, MapwizePlugin mapwizePlugin) {
         this.mapwizePlugin = mapwizePlugin;
-
-        mapwizePlugin.setOnDidLoadListener(new MapwizePlugin.OnDidLoadListener() {
-            @Override
-            public void didLoad(MapwizePlugin plugin) { }});
-
-
-                this.mapwizePlugin.setOnDidLoadListener( plugin -> {
+        this.mapwizePlugin.setOnDidLoadListener( plugin -> {
             requestLocationPermission();
         });
         this.mapwizePlugin.addOnClickListener(clickEvent -> {
