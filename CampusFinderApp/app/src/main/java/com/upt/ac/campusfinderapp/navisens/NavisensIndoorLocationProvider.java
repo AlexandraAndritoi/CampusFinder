@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import com.navisens.motiondnaapi.MotionDna;
 import com.navisens.motiondnaapi.MotionDnaApplication;
 import com.navisens.motiondnaapi.MotionDnaInterface;
+import com.upt.ac.campusfinderapp.utils.CampusFinderApplication;
 
 import java.util.Map;
 
@@ -41,6 +42,7 @@ public class NavisensIndoorLocationProvider extends IndoorLocationProvider imple
         mSourceProvider = sourceProvider;
         mSourceProvider.addListener(this);
         mMotionDna = new MotionDnaApplication(this);
+        mMotionDna.runMotionDna(CampusFinderApplication.NAVISENS_API_KEY);
     }
 
     public MotionDnaApplication getMotionDna() {
