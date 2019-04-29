@@ -216,14 +216,23 @@ public class MenuActivity extends AppCompatActivity
     @Override
     public void onFragmentReady(MapboxMap mapboxMap, MapwizePlugin mapwizePlugin) {
         this.mapwizePlugin = mapwizePlugin;
-        this.mapwizePlugin.setOnDidLoadListener( plugin -> {
-            requestLocationPermission();
-        });
-        this.mapwizePlugin.addOnClickListener(clickEvent -> {
+        requestLocationPermission();
+        this.mapwizePlugin.addOnLongClickListener(clickEvent -> {
             LatLngFloor latLngFloor = clickEvent.getLatLngFloor();
             IndoorLocation indoorLocation = new IndoorLocation(manualIndoorLocationProvider.getName(), latLngFloor.getLatitude(), latLngFloor.getLongitude(), latLngFloor.getFloor(), System.currentTimeMillis());
             manualIndoorLocationProvider.dispatchIndoorLocationChange(indoorLocation);
         });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_LOCATION_PERMISSION: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    setupLocationProvider();
+                }
+            }
+        }
     }
 
     private void requestLocationPermission() {
@@ -235,7 +244,7 @@ public class MenuActivity extends AppCompatActivity
     }
 
     private void setupLocationProvider() {
-        IndoorLocation manualIndoorLocation = new IndoorLocation("Manual", 45.747338, 21.226126, (double)0, System.currentTimeMillis());
+        IndoorLocation manualIndoorLocation = new IndoorLocation("Manual", 45.747338, 21.226126, (double)4, System.currentTimeMillis());
         manualIndoorLocationProvider = new ManualIndoorLocationProvider();
         manualIndoorLocationProvider.setIndoorLocation(manualIndoorLocation);
         navisensIndoorLocationProvider = new NavisensIndoorLocationProvider(this, NAVISENS_API_KEY, manualIndoorLocationProvider);
