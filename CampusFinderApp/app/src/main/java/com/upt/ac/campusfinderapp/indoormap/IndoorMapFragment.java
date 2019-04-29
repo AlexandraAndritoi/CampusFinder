@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.upt.ac.campusfinderapp.R;
+import com.upt.ac.campusfinderapp.utils.CampusFinderApplication;
+
 import io.mapwize.mapwizecomponents.ui.MapwizeFragment;
 import io.mapwize.mapwizecomponents.ui.MapwizeFragmentUISettings;
 import io.mapwize.mapwizeformapbox.map.MapOptions;
@@ -18,14 +20,13 @@ public class IndoorMapFragment extends Fragment {
 
     private MapwizeFragment mapwizeFragment;
 
-    private static final String VENUE_ID = "";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         MapOptions options = new MapOptions.Builder()
-                                .restrictContentToVenue(VENUE_ID)
-                                .centerOnVenue(VENUE_ID)
+                                .restrictContentToVenue(CampusFinderApplication.MAPWIZE_VENUE_ID)
+                                .centerOnVenue(CampusFinderApplication.MAPWIZE_VENUE_ID)
                                 .build();
         MapwizeFragmentUISettings settings = new MapwizeFragmentUISettings.Builder()
                                                 .menuButtonHidden(true)

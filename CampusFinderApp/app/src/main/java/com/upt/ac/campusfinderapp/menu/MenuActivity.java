@@ -34,6 +34,7 @@ import com.upt.ac.campusfinderapp.savedplaces.SavedPlacesFragment;
 import com.upt.ac.campusfinderapp.settings.SettingsActivity;
 import com.upt.ac.campusfinderapp.indoormap.IndoorMapFragment;
 import com.upt.ac.campusfinderapp.outdoormap.OutdoorMapFragment;
+import com.upt.ac.campusfinderapp.utils.CampusFinderApplication;
 import com.upt.ac.campusfinderapp.utils.CurrentUserData;
 import com.upt.ac.campusfinderapp.utils.LoginActivity;
 
@@ -53,7 +54,6 @@ public class MenuActivity extends AppCompatActivity
     private ManualIndoorLocationProvider manualIndoorLocationProvider;
     private NavisensIndoorLocationProvider navisensIndoorLocationProvider;
 
-    private static final String NAVISENS_API_KEY = "";
     private static final int REQUEST_LOCATION_PERMISSION = 1;
 
     @Override
@@ -247,7 +247,7 @@ public class MenuActivity extends AppCompatActivity
         IndoorLocation manualIndoorLocation = new IndoorLocation("Manual", 45.747338, 21.226126, (double)4, System.currentTimeMillis());
         manualIndoorLocationProvider = new ManualIndoorLocationProvider();
         manualIndoorLocationProvider.setIndoorLocation(manualIndoorLocation);
-        navisensIndoorLocationProvider = new NavisensIndoorLocationProvider(this, NAVISENS_API_KEY, manualIndoorLocationProvider);
+        navisensIndoorLocationProvider = new NavisensIndoorLocationProvider(this, CampusFinderApplication.NAVISENS_API_KEY, manualIndoorLocationProvider);
         mapwizePlugin.setLocationProvider(navisensIndoorLocationProvider);
     }
 
