@@ -23,8 +23,12 @@ allprojects {
         maven {
             url "https://maven.tomtom.com:8443/nexus/content/repositories/releases/"
         }
-        maven { url "https://jitpack.io" }
-        maven { url 'https://maven.mapwize.io'}
+        maven {
+            url "https://jitpack.io"
+        }
+        maven {
+            url 'https://maven.mapwize.io'
+        }
     }
 }
 
