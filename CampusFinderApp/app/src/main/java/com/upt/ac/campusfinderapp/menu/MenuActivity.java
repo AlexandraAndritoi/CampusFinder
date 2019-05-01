@@ -123,16 +123,6 @@ public class MenuActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -244,9 +234,9 @@ public class MenuActivity extends AppCompatActivity
     }
 
     private void setupLocationProvider() {
-        IndoorLocation manualIndoorLocation = new IndoorLocation("Manual", 45.747338, 21.226126, (double)4, System.currentTimeMillis());
+//        IndoorLocation manualIndoorLocation = new IndoorLocation("Manual", 45.747338, 21.226126, (double)4, System.currentTimeMillis());
         manualIndoorLocationProvider = new ManualIndoorLocationProvider();
-        manualIndoorLocationProvider.setIndoorLocation(manualIndoorLocation);
+//        manualIndoorLocationProvider.setIndoorLocation(manualIndoorLocation);
         navisensIndoorLocationProvider = new NavisensIndoorLocationProvider(this, CampusFinderApplication.NAVISENS_API_KEY, manualIndoorLocationProvider);
         mapwizePlugin.setLocationProvider(navisensIndoorLocationProvider);
     }
