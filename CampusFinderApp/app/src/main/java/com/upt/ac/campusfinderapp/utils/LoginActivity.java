@@ -59,6 +59,7 @@ public class LoginActivity extends AppCompatActivity {
                         .createSignInIntentBuilder()
                         .setAvailableProviders(providers)
 //                        .setIsSmartLockEnabled(false)
+                        .setTheme(R.style.FirebaseUITheme)
                         .build(),
                 RC_SIGN_IN);
     }
