@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorPrimary">#C51586</color>
+    <color name="colorPrimaryDark">#890e5d</color>
+    <color name="colorAccent">#C51586</color>
+    <color name="statusBarColor">#d65baa</color>
+
+    <color name="mapwize_main_color">#C51586</color>
 
     <color name="grey_100">#F5F5F5</color>
     <color name="grey_300">#E0E0E0</color>
     <color name="grey_500">#9E9E9E</color>
 
-    <color name="bg_balloon_button_color">#C3D552</color>
+    <color name="bg_balloon_button_color">#d65baa</color>
 </resources>
