@@ -4,6 +4,12 @@ import io.indoorlocation.core.IndoorLocationProvider;
 
 public class WifiIndoorLocationProvider extends IndoorLocationProvider {
 
+    private static final WifiIndoorLocationProvider provider = new WifiIndoorLocationProvider();
+
+    private WifiIndoorLocationProvider() {
+        super();
+    }
+
     private boolean isStarted = false;
 
     @Override
@@ -24,5 +30,9 @@ public class WifiIndoorLocationProvider extends IndoorLocationProvider {
     @Override
     public boolean isStarted() {
         return isStarted;
+    }
+
+    public static WifiIndoorLocationProvider getInstance() {
+        return provider;
     }
 }
