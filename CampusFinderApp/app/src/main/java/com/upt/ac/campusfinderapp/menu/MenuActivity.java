@@ -28,6 +28,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.upt.ac.campusfinderapp.R;
+import com.upt.ac.campusfinderapp.indoorlocation.WifiIndoorLocationProvider;
 import com.upt.ac.campusfinderapp.navisens.NavisensIndoorLocationProvider;
 import com.upt.ac.campusfinderapp.savedplaces.OnFragmentInteractionListener;
 import com.upt.ac.campusfinderapp.savedplaces.SavedPlacesFragment;
@@ -53,6 +54,7 @@ public class MenuActivity extends AppCompatActivity
     private MapwizePlugin mapwizePlugin;
     private ManualIndoorLocationProvider manualIndoorLocationProvider;
     private NavisensIndoorLocationProvider navisensIndoorLocationProvider;
+    private WifiIndoorLocationProvider wifiIndoorLocationProvider;
 
     private static final int REQUEST_LOCATION_PERMISSION = 1;
 
@@ -62,6 +64,7 @@ public class MenuActivity extends AppCompatActivity
         setContentView(R.layout.activity_menu);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        wifiIndoorLocationProvider = new WifiIndoorLocationProvider(this);
 
 //        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 //        fab.setOnClickListener(new View.OnClickListener() {
