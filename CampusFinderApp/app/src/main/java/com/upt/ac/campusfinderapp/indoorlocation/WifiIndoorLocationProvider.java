@@ -20,7 +20,6 @@ public class WifiIndoorLocationProvider extends IndoorLocationProvider implement
     private boolean isStarted = false;
 
     private static final long WIFI_SCAN_RATE = 10000L;
-    private static final int WIFI_SIGNAL_STRENGTH_MAX = -120;
 
     public WifiIndoorLocationProvider(Context context) {
         this.context = context;
@@ -28,11 +27,12 @@ public class WifiIndoorLocationProvider extends IndoorLocationProvider implement
     }
 
     @Override
-    public void onScanResult(List<ScanResult> list) {
+    public void onScanResult(List<ScanResult> scanResults) {
+        int wifiSignalStrengthMax = -120;
         try {
-            for(Iterator iterator = list.iterator(); iterator.hasNext(); ) {
-                ScanResult scanResult = (ScanResult)iterator.next();
-                if(scanResult.level > WIFI_SIGNAL_STRENGTH_MAX){
+            for(ScanResult scanResult: scanResults) {
+                if(scanResult.level > wifiSignalStrengthMax){
+                    wifiSignalStrengthMax = scanResult.level;
                     wifiAccessPoint = new JSONObject();
                     wifiAccessPoint.put("SSID", scanResult.SSID);
                     wifiAccessPoint.put("BSSID", scanResult.BSSID);
@@ -43,11 +43,10 @@ public class WifiIndoorLocationProvider extends IndoorLocationProvider implement
                         wifiAccessPoint.put("channelWidth", scanResult.channelWidth);
                         wifiAccessPoint.put("centerFreq0", scanResult.centerFreq0);
                         wifiAccessPoint.put("centerFreq1", scanResult.centerFreq1);
-                        wifiAccessPoint.put("venue", scanResult.venueName);
                     }
-                    System.out.print(wifiAccessPoint.toString());
                 }
             }
+            System.out.print(wifiSignalStrengthMax);
         } catch (Exception e) {
             e.printStackTrace();
         }
