@@ -6,7 +6,6 @@ import android.os.Build;
 
 import com.navisens.motiondnaapi.WifiScanner;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.Iterator;
@@ -17,38 +16,40 @@ import io.indoorlocation.core.IndoorLocationProvider;
 public class WifiIndoorLocationProvider extends IndoorLocationProvider implements WifiScanner.Listener {
 
     private Context context;
-
+    private JSONObject wifiAccessPoint;
     private boolean isStarted = false;
-    private static final long wifiScanRate = 10000L;
+
+    private static final long WIFI_SCAN_RATE = 10000L;
+    private static final int WIFI_SIGNAL_STRENGTH_MAX = -120;
 
     public WifiIndoorLocationProvider(Context context) {
         this.context = context;
-        WifiScanner.addListener(context,this, wifiScanRate);
+        WifiScanner.addListener(context,this, WIFI_SCAN_RATE);
     }
 
     @Override
     public void onScanResult(List<ScanResult> list) {
         try {
-            JSONArray var2 = new JSONArray();
-
-            JSONObject var5;
-            for(Iterator var3 = list.iterator(); var3.hasNext(); var2.put(var5)) {
-                ScanResult var4 = (ScanResult)var3.next();
-                var5 = new JSONObject();
-                var5.put("SSID", var4.SSID);
-                var5.put("BSSID", var4.BSSID);
-                var5.put("capabilities", var4.capabilities);
-                var5.put("level", var4.level);
-                var5.put("frequency", var4.frequency);
-                if (Build.VERSION.SDK_INT >= 23) {
-                    var5.put("channelWidth", var4.channelWidth);
-                    var5.put("centerFreq0", var4.centerFreq0);
-                    var5.put("centerFreq1", var4.centerFreq1);
+            for(Iterator iterator = list.iterator(); iterator.hasNext(); ) {
+                ScanResult scanResult = (ScanResult)iterator.next();
+                if(scanResult.level > WIFI_SIGNAL_STRENGTH_MAX){
+                    wifiAccessPoint = new JSONObject();
+                    wifiAccessPoint.put("SSID", scanResult.SSID);
+                    wifiAccessPoint.put("BSSID", scanResult.BSSID);
+                    wifiAccessPoint.put("capabilities", scanResult.capabilities);
+                    wifiAccessPoint.put("level", scanResult.level);
+                    wifiAccessPoint.put("frequency", scanResult.frequency);
+                    if (Build.VERSION.SDK_INT >= 23) {
+                        wifiAccessPoint.put("channelWidth", scanResult.channelWidth);
+                        wifiAccessPoint.put("centerFreq0", scanResult.centerFreq0);
+                        wifiAccessPoint.put("centerFreq1", scanResult.centerFreq1);
+                        wifiAccessPoint.put("venue", scanResult.venueName);
+                    }
+                    System.out.print(wifiAccessPoint.toString());
                 }
-                System.out.print(var5.toString());
             }
-        } catch (Exception var6) {
-            var6.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -60,7 +61,7 @@ public class WifiIndoorLocationProvider extends IndoorLocationProvider implement
     @Override
     public void start() {
         isStarted = true;
-        WifiScanner.addListener(context,this, wifiScanRate);
+        WifiScanner.addListener(context,this, WIFI_SCAN_RATE);
     }
 
     @Override
