@@ -210,9 +210,7 @@ public class MenuActivity extends AppCompatActivity
     public void onFragmentReady(MapboxMap mapboxMap, MapwizePlugin mapwizePlugin) {
         this.mapwizePlugin = mapwizePlugin;
         requestLocationPermission();
-        if(wifiIndoorLocationProvider.getIndoorLocation()!= null){
-            manualIndoorLocationProvider.dispatchIndoorLocationChange(wifiIndoorLocationProvider.getIndoorLocation());
-        }
+        locateDeviceWithWifiBasedIndoorLocation();
         this.mapwizePlugin.addOnLongClickListener(clickEvent -> {
             LatLngFloor latLngFloor = clickEvent.getLatLngFloor();
             IndoorLocation indoorLocation = new IndoorLocation(manualIndoorLocationProvider.getName(), latLngFloor.getLatitude(), latLngFloor.getLongitude(), latLngFloor.getFloor(), System.currentTimeMillis());
@@ -240,11 +238,15 @@ public class MenuActivity extends AppCompatActivity
     }
 
     private void setupLocationProvider() {
-//        IndoorLocation manualIndoorLocation = new IndoorLocation("Manual", 45.747338, 21.226126, (double)4, System.currentTimeMillis());
         manualIndoorLocationProvider = new ManualIndoorLocationProvider();
-//        manualIndoorLocationProvider.setIndoorLocation(manualIndoorLocation);
         navisensIndoorLocationProvider = new NavisensIndoorLocationProvider(this, CampusFinderApplication.NAVISENS_API_KEY, manualIndoorLocationProvider);
         mapwizePlugin.setLocationProvider(navisensIndoorLocationProvider);
+    }
+
+    private void locateDeviceWithWifiBasedIndoorLocation(){
+        if(wifiIndoorLocationProvider.getIndoorLocation()!= null){
+            manualIndoorLocationProvider.dispatchIndoorLocationChange(wifiIndoorLocationProvider.getIndoorLocation());
+        }
     }
 
     @Override
