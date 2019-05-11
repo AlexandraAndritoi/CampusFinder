@@ -210,6 +210,9 @@ public class MenuActivity extends AppCompatActivity
     public void onFragmentReady(MapboxMap mapboxMap, MapwizePlugin mapwizePlugin) {
         this.mapwizePlugin = mapwizePlugin;
         requestLocationPermission();
+        if(wifiIndoorLocationProvider.getIndoorLocation()!= null){
+            manualIndoorLocationProvider.dispatchIndoorLocationChange(wifiIndoorLocationProvider.getIndoorLocation());
+        }
         this.mapwizePlugin.addOnLongClickListener(clickEvent -> {
             LatLngFloor latLngFloor = clickEvent.getLatLngFloor();
             IndoorLocation indoorLocation = new IndoorLocation(manualIndoorLocationProvider.getName(), latLngFloor.getLatitude(), latLngFloor.getLongitude(), latLngFloor.getFloor(), System.currentTimeMillis());
