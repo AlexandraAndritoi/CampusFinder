@@ -1,8 +1,10 @@
 package com.upt.ac.campusfinderapp.indoorlocation;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.wifi.ScanResult;
 import android.os.Build;
+import android.preference.PreferenceManager;
 
 import com.navisens.motiondnaapi.WifiScanner;
 import com.upt.ac.campusfinderapp.model.WifiAccessPoint;
@@ -15,6 +17,7 @@ import io.indoorlocation.core.IndoorLocationProvider;
 public class WifiIndoorLocationProvider extends IndoorLocationProvider implements WifiScanner.Listener {
 
     private Context context;
+    private SharedPreferences sharedPreferences;
     private IndoorLocation indoorLocation;
     private IndoorLocationCalculator indoorLocationCalculator;
     private WifiAccessPoint wifiAccessPoint;
@@ -24,6 +27,7 @@ public class WifiIndoorLocationProvider extends IndoorLocationProvider implement
 
     public WifiIndoorLocationProvider(Context context) {
         this.context = context;
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         indoorLocationCalculator = new IndoorLocationCalculator();
         WifiScanner.addListener(context,this, WIFI_SCAN_RATE);
     }
@@ -41,7 +45,8 @@ public class WifiIndoorLocationProvider extends IndoorLocationProvider implement
                 wifiAccessPoint.setFrequency(scanResult.frequency);
             }
         }
-        if(wifiAccessPoint != null){
+        boolean isWifiBasedIndoorLocationEnabled = sharedPreferences.getBoolean("wifi_indoor_location", true);
+        if(wifiAccessPoint != null && isWifiBasedIndoorLocationEnabled){
             indoorLocation = indoorLocationCalculator.calculateIndoorLocationFromWifiAccessPointData(wifiAccessPoint);
         }
     }
