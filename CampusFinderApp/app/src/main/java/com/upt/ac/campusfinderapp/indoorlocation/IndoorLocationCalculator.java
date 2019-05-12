@@ -15,10 +15,26 @@ class IndoorLocationCalculator {
     private JSONObject B414 = new JSONObject();
 
 
-    private static final double latitude = 45.774568;
-    private static final double longitude = 21.244662;
+    private double latitude = 45.774568;
+    private double longitude = 21.244662;
 
     IndoorLocation calculateIndoorLocationFromWifiAccessPointData(WifiAccessPoint wifiAccessPoint) {
+        if(wifiAccessPoint.getSSID().equals("B414")){
+            latitude = 45.747170;
+            longitude = 21.226210;
+        }
+        if(wifiAccessPoint.getSSID().equals("cmrssi")){
+            latitude = 45.747247;
+            longitude = 21.226090;
+        }
+        if(wifiAccessPoint.getSSID().equals("B424_WiFi")){
+            latitude = 45.747441;
+            longitude = 21.226276;
+        }
+        if(wifiAccessPoint.getSSID().equals("UPT-eduroam") && wifiAccessPoint.getBSSID().contains("51:00")){
+            latitude = 45.747247;
+            longitude = 21.226208;
+        }
         double distance = calculateDistanceFromDeviceToWifiAccessPoint(wifiAccessPoint.getLevel(), wifiAccessPoint.getFrequency());
         return calculateIndoorLocation(distance);
     }
