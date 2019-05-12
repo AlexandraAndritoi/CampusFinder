@@ -3,7 +3,6 @@ package com.upt.ac.campusfinderapp.indoorlocation;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.wifi.ScanResult;
-import android.os.Build;
 import android.preference.PreferenceManager;
 
 import com.navisens.motiondnaapi.WifiScanner;

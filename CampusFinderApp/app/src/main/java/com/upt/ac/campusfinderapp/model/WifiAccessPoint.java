@@ -18,23 +18,50 @@ public class WifiAccessPoint {
     }
 
     public int getLevel() {
-        return Level;
+        return level;
     }
 
     public void setLevel(int level) {
-        Level = level;
+        this.level = level;
     }
 
     public int getFrequency() {
-        return Frequency;
+        return frequency;
     }
 
     public void setFrequency(int frequency) {
-        Frequency = frequency;
+        this.frequency = frequency;
+    }
+
+    public double getFloor() {
+        return floor;
+    }
+
+    public void setFloor(double floor) {
+        this.floor = floor;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 
     private String SSID;
     private String BSSID;
-    private int Level;
-    private int Frequency;
+    private int level;
+    private int frequency;
+    private double floor;
+    private double latitude;
+    private double longitude;
 }
