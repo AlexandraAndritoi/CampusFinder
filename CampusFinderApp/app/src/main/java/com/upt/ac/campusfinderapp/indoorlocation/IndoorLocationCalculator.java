@@ -1,73 +1,39 @@
 package com.upt.ac.campusfinderapp.indoorlocation;
 
-import android.support.annotation.NonNull;
+import android.content.Context;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.upt.ac.campusfinderapp.model.WifiAccessPoint;
-
+import com.upt.ac.campusfinderapp.utils.FileWriter;
+import com.upt.ac.campusfinderapp.utils.WifiAccessPointRepository;
+import java.util.List;
 import io.indoorlocation.core.IndoorLocation;
+
 
 class IndoorLocationCalculator {
     private static final double EARTH_RADIUS = 6378.137;
     private static final double K = (1 / ((2 * Math.PI / 360) * EARTH_RADIUS)) / 1000;
 
-    private DatabaseReference mDatabaseReference;
-    private static final String WIFIACCESSPOINT = "wifiaccesspoint";
-    private static final String SSID = "ssid";
+    private Context context;
+    private double latitude;
+    private double longitude;
 
-    IndoorLocationCalculator(){
-        mDatabaseReference = FirebaseDatabase.getInstance().getReference(WIFIACCESSPOINT);
+    IndoorLocationCalculator(Context context){
+        this.context = context;
     }
 
-
-    private double latitude = 45.774568;
-    private double longitude = 21.244662;
-
     IndoorLocation calculateIndoorLocationFromWifiAccessPointData(WifiAccessPoint wifiAccessPoint) {
-
-        Query query = mDatabaseReference.orderByChild(SSID).equalTo(wifiAccessPoint.getSSID());
-
-        query.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot ds : dataSnapshot.getChildren()){
-                    WifiAccessPoint wap = ds.getValue(WifiAccessPoint.class);
-                    if(wap != null) {
-                        latitude = wap.getLatitude();
-                        longitude = wap.getLongitude();
-                    }
-                }
+        List<WifiAccessPoint> wifiAccessPoints = WifiAccessPointRepository.getInstance().getWifiAccessPoints();
+        for (WifiAccessPoint wap: wifiAccessPoints) {
+            if(wifiAccessPoint.getSSID().equals(wap.getSSID())){
+                latitude = wap.getLatitude();
+                longitude = wap.getLongitude();
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-        if(wifiAccessPoint.getSSID().equals("B414")){
-            latitude = 45.747170;
-            longitude = 21.226210;
-        }
-        if(wifiAccessPoint.getSSID().equals("cmrssi")){
-            latitude = 45.747247;
-            longitude = 21.226090;
-        }
-        if(wifiAccessPoint.getSSID().equals("B424_WiFi")){
-            latitude = 45.747441;
-            longitude = 21.226276;
-        }
-        if(wifiAccessPoint.getSSID().equals("UPT-eduroam") && wifiAccessPoint.getBSSID().contains("51:00")){
-            latitude = 45.747247;
-            longitude = 21.226208;
         }
         double distance = calculateDistanceFromDeviceToWifiAccessPoint(wifiAccessPoint.getLevel(), wifiAccessPoint.getFrequency());
-        return calculateIndoorLocation(distance);
+        IndoorLocation location = calculateIndoorLocation(distance);
+        FileWriter fileWriter = new FileWriter(context);
+        fileWriter.writeToExternalStorage(wifiAccessPoint, location, distance);
+        return location;
     }
 
     private double calculateDistanceFromDeviceToWifiAccessPoint(int signalLevelInDb, int freqInMHz){

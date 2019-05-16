@@ -14,5 +14,6 @@ public class CampusFinderApplication extends Application {
     public void onCreate() {
         super.onCreate();
         AccountManager.start(this, MAPWIZE_API_KEY);
+        WifiAccessPointRepository.getInstance().queryWifiAccessPointsFromFirebase();
     }
 }

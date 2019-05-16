@@ -8,6 +8,7 @@ import android.preference.PreferenceManager;
 import com.navisens.motiondnaapi.WifiScanner;
 import com.upt.ac.campusfinderapp.model.WifiAccessPoint;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.indoorlocation.core.IndoorLocation;
@@ -27,7 +28,7 @@ public class WifiIndoorLocationProvider extends IndoorLocationProvider implement
     public WifiIndoorLocationProvider(Context context) {
         this.context = context;
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        indoorLocationCalculator = new IndoorLocationCalculator();
+        indoorLocationCalculator = new IndoorLocationCalculator(context);
         WifiScanner.addListener(context,this, WIFI_SCAN_RATE);
     }
 
