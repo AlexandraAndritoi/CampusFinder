@@ -8,9 +8,7 @@ import com.upt.ac.campusfinderapp.model.WifiAccessPoint;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 
 import io.indoorlocation.core.IndoorLocation;
@@ -25,29 +23,29 @@ public class FileWriter {
         this.context = context;
     }
 
+    public void writeToExternalStorage(WifiAccessPoint wifiAccessPoints[], IndoorLocation location, double distances[]){
+        for(int i=0; i<3; i++){
+            writeToExternalStorage(wifiAccessPoints[i], location, distances[i]);
+        }
+    }
+
     public void writeToExternalStorage(WifiAccessPoint wifiAccessPoint, IndoorLocation location, double distance){
-        SimpleDateFormat sdf = new SimpleDateFormat("dd MM yyyy HH:mm:ss");
-
-        String filename = sdf.format(System.currentTimeMillis()) + ".txt";
-
-        File root = new File(context.getExternalFilesDir(
-                Environment.DIRECTORY_DOWNLOADS), "CampusFinder");
-        root.mkdir();
-        File file = new File(root, filename);
-
+        SimpleDateFormat ddMmYyyy = new SimpleDateFormat("dd MM yyyy");
+        SimpleDateFormat format = new SimpleDateFormat("dd MM yyyy hh:mm:ss");
+        String filename = ddMmYyyy.format(System.currentTimeMillis()) + ".txt";
+        File file = new File(context.getExternalFilesDir(
+                Environment.DIRECTORY_DOWNLOADS), filename);
         try {
-            FileOutputStream f = new FileOutputStream(file);
-            PrintWriter pw = new PrintWriter(f);
-            pw.println(sdf.format(System.currentTimeMillis()));
-            pw.println("wap " + wifiAccessPoint.getSSID());
-            pw.println("level " + wifiAccessPoint.getLevel());
-            pw.println("freq " + wifiAccessPoint.getFrequency());
-            pw.println("distance " + distance);
-            pw.println("latitude " + location.getLatitude());
-            pw.println("longitude " + location.getLongitude());
-            pw.println("----");
-            pw.close();
-            f.close();
+            java.io.FileWriter fileWriter = new java.io.FileWriter(file, true);
+            fileWriter.append(format.format(System.currentTimeMillis())+ "\n");
+            fileWriter.append("wap " + wifiAccessPoint.getSSID() + "\n");
+            fileWriter.append("level " + wifiAccessPoint.getLevel() + "\n");
+            fileWriter.append("freq " + wifiAccessPoint.getFrequency() + "\n");
+            fileWriter.append("distance " + distance + "\n");
+            fileWriter.append("latitude " + location.getLatitude() + "\n");
+            fileWriter.append("longitude " + location.getLongitude() + "\n");
+            fileWriter.append("----\n");
+            fileWriter.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             Log.i(TAG, "******* File not found. Did you" +

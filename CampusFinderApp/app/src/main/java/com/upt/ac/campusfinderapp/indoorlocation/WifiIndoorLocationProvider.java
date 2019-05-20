@@ -9,6 +9,9 @@ import com.navisens.motiondnaapi.WifiScanner;
 import com.upt.ac.campusfinderapp.model.WifiAccessPoint;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import io.indoorlocation.core.IndoorLocation;
@@ -20,7 +23,6 @@ public class WifiIndoorLocationProvider extends IndoorLocationProvider implement
     private SharedPreferences sharedPreferences;
     private IndoorLocation indoorLocation;
     private IndoorLocationCalculator indoorLocationCalculator;
-    private WifiAccessPoint wifiAccessPoint;
     private boolean isStarted = false;
 
     private static final long WIFI_SCAN_RATE = 10000L;
@@ -34,20 +36,21 @@ public class WifiIndoorLocationProvider extends IndoorLocationProvider implement
 
     @Override
     public void onScanResult(List<ScanResult> scanResults) {
-        double signalLevelInDbMax = -120;
-        for(ScanResult scanResult: scanResults) {
-            if(scanResult.level > signalLevelInDbMax){
-                signalLevelInDbMax = scanResult.level;
-                wifiAccessPoint = new WifiAccessPoint();
-                wifiAccessPoint.setSSID(scanResult.SSID);
-                wifiAccessPoint.setBSSID(scanResult.BSSID);
-                wifiAccessPoint.setLevel(scanResult.level);
-                wifiAccessPoint.setFrequency(scanResult.frequency);
+        WifiAccessPoint wifiAccessPoints[]= new WifiAccessPoint[3];
+        if(scanResults != null){
+            Collections.sort(scanResults, (o1, o2) -> Integer.compare(o2.level, o1.level));
+            for(int i=0; i<3; i++){
+                ScanResult scanResult = scanResults.get(i);
+                wifiAccessPoints[i] = new WifiAccessPoint();
+                wifiAccessPoints[i].setSSID(scanResult.SSID);
+                wifiAccessPoints[i].setBSSID(scanResult.BSSID);
+                wifiAccessPoints[i].setLevel(scanResult.level);
+                wifiAccessPoints[i].setFrequency(scanResult.frequency);
             }
-        }
-        boolean isWifiBasedIndoorLocationEnabled = sharedPreferences.getBoolean("wifi_indoor_location", true);
-        if(wifiAccessPoint != null && isWifiBasedIndoorLocationEnabled){
-            indoorLocation = indoorLocationCalculator.calculateIndoorLocationFromWifiAccessPointData(wifiAccessPoint);
+            boolean isWifiBasedIndoorLocationEnabled = sharedPreferences.getBoolean("wifi_indoor_location", true);
+            if(isWifiBasedIndoorLocationEnabled){
+                indoorLocation = indoorLocationCalculator.calculateIndoorLocationFromWifiAccessPointData(wifiAccessPoints);
+            }
         }
     }
 
