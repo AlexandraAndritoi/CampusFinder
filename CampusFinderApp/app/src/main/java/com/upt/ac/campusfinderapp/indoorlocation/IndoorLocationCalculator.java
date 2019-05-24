@@ -42,9 +42,10 @@ class IndoorLocationCalculator {
 //                        wap2.getLatitude(), wap2.getLongitude(), distance2,
 //                        wap3.getLatitude(), wap3.getLongitude(), distance3);
         Location location =
-                trilateration(45.774510, 21.245588, 2,
-                        45.774344, 21.245645, 2,
-                        45.774304, 21.245579, 2);
+                trilateration(45.7742240, 21.245395, 2,
+                        45.774187, 21.245362, 2,
+                        45.774167, 21.245424, 2,
+                        45.774215, 21.245444, 2);
         IndoorLocation indoorLocation = calculateIndoorLocation(wap1.getLatitude(), wap1.getLongitude(), distance1);
         FileWriter fileWriter = new FileWriter(context);
         //fileWriter.writeToExternalStorage(wap1, indoorLocation, distance1);
@@ -63,70 +64,53 @@ class IndoorLocationCalculator {
         return new IndoorLocation(WifiIndoorLocationProvider.class.getName(), newLatitude, newLongitude, 0.0, System.currentTimeMillis());
     }
 
-    private Location trilateration(double p1x, double p1y, double r1, double p2x, double p2y, double r2, double p3x, double p3y, double r3){
+    private Location trilateration(double p1x, double p1y, double d1,
+                                   double p2x, double p2y, double d2,
+                                   double p3x, double p3y, double d3,
+                                   double p4x, double p4y, double d4) {
         double earthR = 6378.137;
 
-        double P1x = (earthR*(Math.cos(Math.toRadians(p1x))*Math.cos(Math.toRadians(p1y))));
-        double P1y = (earthR*(Math.cos(Math.toRadians(p1x))*Math.sin(Math.toRadians(p1y))));
-        double P1z = (earthR*(Math.sin(Math.toRadians(p1x))));
+        double P1x = (earthR * (Math.cos(Math.toRadians(p1x)) * Math.cos(Math.toRadians(p1y))));
+        double P1y = (earthR * (Math.cos(Math.toRadians(p1x)) * Math.sin(Math.toRadians(p1y))));
+        double P1z = (earthR * (Math.sin(Math.toRadians(p1x))));
 
-        double P2x = (earthR*(Math.cos(Math.toRadians(p2x))*Math.cos(Math.toRadians(p2y))));
-        double P2y = (earthR*(Math.cos(Math.toRadians(p2x))*Math.sin(Math.toRadians(p2y))));
-        double P2z = (earthR*(Math.sin(Math.toRadians(p2x))));
+        double P2x = (earthR * (Math.cos(Math.toRadians(p2x)) * Math.cos(Math.toRadians(p2y))));
+        double P2y = (earthR * (Math.cos(Math.toRadians(p2x)) * Math.sin(Math.toRadians(p2y))));
+        double P2z = (earthR * (Math.sin(Math.toRadians(p2x))));
 
-        double P3x = (earthR*(Math.cos(Math.toRadians(p3x))*Math.cos(Math.toRadians(p3y))));
-        double P3y = (earthR*(Math.cos(Math.toRadians(p3x))*Math.sin(Math.toRadians(p3y))));
-        double P3z = (earthR*(Math.sin(Math.toRadians(p3x))));
+        double P3x = (earthR * (Math.cos(Math.toRadians(p3x)) * Math.cos(Math.toRadians(p3y))));
+        double P3y = (earthR * (Math.cos(Math.toRadians(p3x)) * Math.sin(Math.toRadians(p3y))));
+        double P3z = (earthR * (Math.sin(Math.toRadians(p3x))));
 
-        double exx = ((P2x-P1x)/Math.sqrt(Math.pow(P2z-P1z, 2)+Math.pow((P2x-P1x),2)+Math.pow((P2y-P1y),2)));
-        double exy = ((P2y-P1y)/Math.sqrt(Math.pow(P2z-P1z, 2)+Math.pow((P2x-P1x),2)+Math.pow((P2y-P1y),2)));
-        double exz = ((P2z-P1z)/Math.sqrt(Math.pow(P2z-P1z, 2)+Math.pow((P2x-P1x),2)+Math.pow((P2y-P1y),2)));
-        double EX = Math.sqrt(Math.pow(exx, 2)+Math.pow(exy, 2)+Math.pow(exz,2));
+        double P4x = (earthR * (Math.cos(Math.toRadians(p4x)) * Math.cos(Math.toRadians(p4y))));
+        double P4y = (earthR * (Math.cos(Math.toRadians(p4x)) * Math.sin(Math.toRadians(p4y))));
+        double P4z = (earthR * (Math.sin(Math.toRadians(p4x))));
 
-        double i = Math.sqrt(Math.pow((P3x-P1x)*EX, 2)+Math.pow((P3y-P1y)*EX, 2)+Math.pow((P3z-P1z)*EX, 2));
+        double A = P2x-P1x;
+        double B = P2y-P1y;
+        double C = P1z-P2z;
+        double D = (Math.pow(d2,2)-Math.pow(d1,2)+Math.pow(P1x,2)-Math.pow(P2x,2)+Math.pow(P1y,2)-Math.pow(P2y,2)+Math.pow(P1z,2)-Math.pow(P2z,2))/2;
+        double E = P2x-P3x;
+        double F = P2y-P3y;
+        double G = P2z-P3z;
+        double H = (Math.pow(d3,2)-Math.pow(d2,2)+Math.pow(P2x,2)-Math.pow(P3x,2)+Math.pow(P2y,2)-Math.pow(P3y,2)+Math.pow(P2z,2)-Math.pow(P3z,2))/2;
+        double I = P3x-P4x;
+        double J = P3y-P4y;
+        double K = P3z-P4z;
+        double L = (Math.pow(d4,2)-Math.pow(d3,2)+Math.pow(P3x,2)-Math.pow(P4x,2)+Math.pow(P3y,2)-Math.pow(P4y,2)+Math.pow(P3z,2)-Math.pow(P4z,2))/2;
 
-        double eyx = ((P3x-P1x-(i*exx))/Math.sqrt((Math.pow(P3z-P1z-(i*exz),2))+(Math.pow(P3x-P1x-(i*exx),2))+(Math.pow(P3y-P1y-(i*exy),2))));
-        double eyy = ((P3y-P1y-(i*exy))/Math.sqrt((Math.pow(P3z-P1z-(i*exz),2))+(Math.pow(P3x-P1x-(i*exx),2))+(Math.pow(P3y-P1y-(i*exy),2))));
-        double eyz = ((P3z-P1z-(i*exz))/Math.sqrt((Math.pow(P3z-P1z-(i*exz),2))+(Math.pow(P3x-P1x-(i*exx),2))+(Math.pow(P3y-P1y-(i*exy),2))));
-        double EY = Math.sqrt(Math.pow(eyx, 2)+Math.pow(eyy, 2)+Math.pow(eyz, 2));
+        double Z = ((A*L-I*D)*(A*F-E*B) - (A*H-E*D)*(A*J-I*B)) / ((C*E-A*G)*(A*J-I*B) + (A*K-I*C)*(A*F-E*B));
+        double Y = (A*H - E*D + Z*(C*E-A*G)) / (A*F-E*B);
+        double X = (D - B*Y - C*Z) / A;
 
-        double ezx = (exy*eyz)-(exz*exy);
-        double ezy = (exz*eyx)-(exx*eyz);
+        double latitude =  Math.asin(Z/earthR);
+        double longitude = Math.atan2(Y, X);
 
-        double d = Math.sqrt((Math.pow(P2x-P1x,2))+(Math.pow(P2y-P1y,2))+Math.pow(P2z-P1z, 2));
+        Location location = new Location("WifiIndoorLocationProvider");
+        location.setLatitude(latitude);
+        location.setLongitude(longitude);
 
-        double j = Math.sqrt(Math.pow((P3x-P1x)*EY, 2)+Math.pow((P3y-P1y)*EY, 2)+Math.pow((P3z-P1z)*EY, 2));
-        double x = ((Math.pow(r1, 2)-Math.pow(r2, 2)+Math.pow(d, 2))/(2*d));
-        double y = (Math.pow(r1, 2)-Math.pow(r3, 2)+Math.pow(i, 2)+Math.pow(j, 2))/(2*j)- (i*x/j);
-
-        double z1 = (Math.pow(r1,2) - Math.pow(x,2) - Math.pow(y,2));
-        double z2;
-        if (z1<0){
-            return null;
-        }
-        else{
-            z1 = Math.sqrt(z1);
-            z2 = z1*-1;
-        }
-
-        double result1x = P1x + exx + eyy + ezx*z1;
-        double result1y = P1y + exx + eyy + ezy*z1;
-        double result2x = P1x + exx + eyy + ezx*z2;
-        double result2y = P1y + exx + eyy + ezy*z2;
-
-        Location result1 = new Location("");
-        result1.setLatitude(result1x);
-        result1.setLongitude(result1y);
-        Location result2 = new Location("");
-        result2.setLatitude(result2x);
-        result2.setLongitude(result2y);
-        Location P3 = new Location("");
-        P3.setLatitude(P3x);
-        P3.setLongitude(P3y);
-
-        if(Math.abs(distance(result1, P3) - r3) < Math.abs(distance(result2, P3) - r3))
-            return result1;
-        else return result2;
+        return location;
     }
 
     private double distance(Location x, Location y){
