@@ -37,7 +37,7 @@ public class WifiIndoorLocationProvider extends IndoorLocationProvider implement
     @Override
     public void onScanResult(List<ScanResult> scanResults) {
         WifiAccessPoint wifiAccessPoints[]= new WifiAccessPoint[3];
-        if(scanResults != null){
+        if(scanResults != null && scanResults.size()>0){
             Collections.sort(scanResults, (o1, o2) -> Integer.compare(o2.level, o1.level));
             for(int i=0; i<3; i++){
                 ScanResult scanResult = scanResults.get(i);
