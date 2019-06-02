@@ -3,10 +3,16 @@ package com.upt.ac.campusfinderapp.indoorlocation;
 import android.content.Context;
 import android.location.Location;
 
+import com.lemmingapex.trilateration.NonLinearLeastSquaresSolver;
+import com.lemmingapex.trilateration.TrilaterationFunction;
 import com.tomtom.online.sdk.common.location.LatLng;
 import com.upt.ac.campusfinderapp.model.WifiAccessPoint;
 import com.upt.ac.campusfinderapp.utils.FileWriter;
 import com.upt.ac.campusfinderapp.utils.WifiAccessPointRepository;
+
+import org.apache.commons.math3.fitting.leastsquares.LeastSquaresOptimizer;
+import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer;
+
 import java.util.List;
 import io.indoorlocation.core.IndoorLocation;
 
@@ -67,106 +73,37 @@ class IndoorLocationCalculator {
                                    double p2x, double p2y, double d2,
                                    double p3x, double p3y, double d3) {
 
-        double[] P1   = new double[2];
-        double[] P2   = new double[2];
-        double[] P3   = new double[2];
-        double[] ex   = new double[2];
-        double[] ey   = new double[2];
-        double[] p3p1 = new double[2];
-        double jval  = 0;
-        double temp  = 0;
-        double ival  = 0;
-        double p3p1i = 0;
-        double triptx;
-        double tripty;
-        double xval;
-        double yval;
-        double t1;
-        double t2;
-        double t3;
-        double t;
-        double exx;
-        double d;
-        double eyy;
+        double earthR = 6378137;    //meters
 
-        //TRANSALTE POINTS TO VECTORS
-        //POINT 1
-        P1[0] = p1x;
-        P1[1] = p1y;
-        //POINT 2
-        P2[0] = p2x;
-        P2[1] = p2y;
-        //POINT 3
-        P3[0] = p3x;
-        P3[1] = p3y;
+        double P1x = (earthR*(Math.cos(Math.toRadians(p1x))*Math.cos(Math.toRadians(p1y))));
+        double P1y = (earthR*(Math.cos(Math.toRadians(p1x))*Math.sin(Math.toRadians(p1y))));
+        double P1z = (earthR*(Math.sin(Math.toRadians(p1x))));
 
-        //TRANSFORM THE METERS VALUE FOR THE MAP UNIT
-        //DISTANCE BETWEEN POINT 1 AND MY LOCATION
-        d1 = (d1 / 100000);
-        //DISTANCE BETWEEN POINT 2 AND MY LOCATION
-        d2 = (d2 / 100000);
-        //DISTANCE BETWEEN POINT 3 AND MY LOCATION
-        d3 = (d3 / 100000);
+        double P2x = (earthR*(Math.cos(Math.toRadians(p2x))*Math.cos(Math.toRadians(p2y))));
+        double P2y = (earthR*(Math.cos(Math.toRadians(p2x))*Math.sin(Math.toRadians(p2y))));
+        double P2z = (earthR*(Math.sin(Math.toRadians(p2x))));
 
-        for (int i = 0; i < P1.length; i++) {
-            t1   = P2[i];
-            t2   = P1[i];
-            t    = t1 - t2;
-            temp += (t*t);
-        }
-        d = Math.sqrt(temp);
-        for (int i = 0; i < P1.length; i++) {
-            t1    = P2[i];
-            t2    = P1[i];
-            exx   = (t1 - t2)/(Math.sqrt(temp));
-            ex[i] = exx;
-        }
-        for (int i = 0; i < P3.length; i++) {
-            t1      = P3[i];
-            t2      = P1[i];
-            t3      = t1 - t2;
-            p3p1[i] = t3;
-        }
-        for (int i = 0; i < ex.length; i++) {
-            t1 = ex[i];
-            t2 = p3p1[i];
-            ival += (t1*t2);
-        }
-        for (int  i = 0; i < P3.length; i++) {
-            t1 = P3[i];
-            t2 = P1[i];
-            t3 = ex[i] * ival;
-            t  = t1 - t2 -t3;
-            p3p1i += (t*t);
-        }
-        for (int i = 0; i < P3.length; i++) {
-            t1 = P3[i];
-            t2 = P1[i];
-            t3 = ex[i] * ival;
-            eyy = (t1 - t2 - t3)/Math.sqrt(p3p1i);
-            ey[i] = eyy;
-        }
-        for (int i = 0; i < ey.length; i++) {
-            t1 = ey[i];
-            t2 = p3p1[i];
-            jval += (t1*t2);
-        }
-        xval = (Math.pow(d1, 2) - Math.pow(d2, 2) + Math.pow(d, 2))/(2*d);
-        yval = ((Math.pow(d1, 2) - Math.pow(d3, 2) + Math.pow(ival, 2) + Math.pow(jval, 2))/(2*jval)) - ((ival/jval)*xval);
+        double P3x = (earthR*(Math.cos(Math.toRadians(p3x))*Math.cos(Math.toRadians(p3y))));
+        double P3y = (earthR*(Math.cos(Math.toRadians(p3x))*Math.sin(Math.toRadians(p3y))));
+        double P3z = (earthR*(Math.sin(Math.toRadians(p3x))));
 
-        t1 = p1x;
-        t2 = ex[0] * xval;
-        t3 = ey[0] * yval;
-        triptx = t1 + t2 + t3;
+        double[][] positions = new double[][] {{P1x, P1y, P1z}, {P2x, P2y, P2z}, {P3x, P3y, P3z}};
+        double[] distances = new double[] {d1, d2, d3};
 
-        t1 = p1y;
-        t2 = ex[1] * xval;
-        t3 = ey[1] * yval;
-        tripty = t1 + t2 + t3;
+        NonLinearLeastSquaresSolver solver = new NonLinearLeastSquaresSolver(new TrilaterationFunction(positions, distances), new LevenbergMarquardtOptimizer());
+        LeastSquaresOptimizer.Optimum optimum = solver.solve();
+
+        double[] centroid = optimum.getPoint().toArray();
+        double x = centroid[0];
+        double y = centroid[1];
+        double z = centroid[2];
+
+        double latitude =  Math.toDegrees(Math.asin(z/earthR));
+        double longitude = Math.toDegrees(Math.atan2(y, x));
 
         Location location = new Location("");
-        location.setLatitude(triptx);
-        location.setLongitude(tripty);
+        location.setLatitude(latitude);
+        location.setLongitude(longitude);
 
         return location;
     }

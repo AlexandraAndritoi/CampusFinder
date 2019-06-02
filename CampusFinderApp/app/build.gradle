@@ -65,6 +65,8 @@ dependencies {
     implementation 'com.github.IndoorLocation:indoor-location-android:1.0.5'
     implementation group: "com.navisens", name: "motiondnaapi", version: "1.8.4", changing: true
     implementation('io.mapwize.indoormaps:MapwizeForMapbox:1.5.1')
+
+    implementation 'com.lemmingapex.trilateration:trilateration:1.0.2'
 }
 apply plugin: 'com.google.gms.google-services'
 
