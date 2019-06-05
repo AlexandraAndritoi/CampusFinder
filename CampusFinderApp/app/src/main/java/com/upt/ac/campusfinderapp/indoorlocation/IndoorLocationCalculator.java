@@ -5,7 +5,6 @@ import android.location.Location;
 
 import com.lemmingapex.trilateration.NonLinearLeastSquaresSolver;
 import com.lemmingapex.trilateration.TrilaterationFunction;
-import com.tomtom.online.sdk.common.location.LatLng;
 import com.upt.ac.campusfinderapp.model.WifiAccessPoint;
 import com.upt.ac.campusfinderapp.utils.FileWriter;
 import com.upt.ac.campusfinderapp.utils.WifiAccessPointRepository;
@@ -43,15 +42,16 @@ class IndoorLocationCalculator {
         double distance1 = calculateDistanceFromDeviceToWifiAccessPoint(wap1.getLevel(), wap1.getFrequency());
         double distance2 = calculateDistanceFromDeviceToWifiAccessPoint(wap2.getLevel(), wap2.getFrequency());
         double distance3 = calculateDistanceFromDeviceToWifiAccessPoint(wap3.getLevel(), wap3.getFrequency());
-//        Location location =
-//                trilateration(wap1.getLatitude(), wap1.getLongitude(), distance1,
-//                        wap2.getLatitude(), wap2.getLongitude(), distance2,
-//                        wap3.getLatitude(), wap3.getLongitude(), distance3);
         Location location =
-                trilateration(45.774124, 21.245351, 5,
-                        45.774098, 21.245438, 5,
-                        45.774022, 21.245366, 6);
-        IndoorLocation indoorLocation = calculateIndoorLocation(wap1.getLatitude(), wap1.getLongitude(), distance1);
+                trilateration(wap1.getLatitude(), wap1.getLongitude(), distance1,
+                        wap2.getLatitude(), wap2.getLongitude(), distance2,
+                        wap3.getLatitude(), wap3.getLongitude(), distance3);
+//        Location location =
+//                trilateration(45.774124, 21.245351, 5,
+//                        45.774098, 21.245438, 5,
+//                        45.774022, 21.245366, 6);
+//        IndoorLocation indoorLocation = calculateIndoorLocation(wap1.getLatitude(), wap1.getLongitude(), distance1);
+        IndoorLocation indoorLocation = new IndoorLocation(location, 4.0);
         FileWriter fileWriter = new FileWriter(context);
         //fileWriter.writeToExternalStorage(wap1, indoorLocation, distance1);
         fileWriter.writeToExternalStorage(wifiAccessPoints, indoorLocation, new double[]{distance1, distance2, distance3});

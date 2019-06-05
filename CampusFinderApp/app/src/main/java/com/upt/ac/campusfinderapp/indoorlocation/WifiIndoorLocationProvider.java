@@ -7,11 +7,10 @@ import android.preference.PreferenceManager;
 
 import com.navisens.motiondnaapi.WifiScanner;
 import com.upt.ac.campusfinderapp.model.WifiAccessPoint;
+import com.upt.ac.campusfinderapp.utils.WifiFilter;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import io.indoorlocation.core.IndoorLocation;
@@ -36,22 +35,28 @@ public class WifiIndoorLocationProvider extends IndoorLocationProvider implement
 
     @Override
     public void onScanResult(List<ScanResult> scanResults) {
-        WifiAccessPoint wifiAccessPoints[]= new WifiAccessPoint[3];
+        boolean isWifiBasedIndoorLocationEnabled = sharedPreferences.getBoolean("wifi_indoor_location", true);
+        WifiFilter wifiFilter = new WifiFilter();
         if(scanResults != null && scanResults.size()>0){
-            Collections.sort(scanResults, (o1, o2) -> Integer.compare(o2.level, o1.level));
-            for(int i=0; i<3; i++){
-                ScanResult scanResult = scanResults.get(i);
-                wifiAccessPoints[i] = new WifiAccessPoint();
-                wifiAccessPoints[i].setSSID(scanResult.SSID);
-                wifiAccessPoints[i].setBSSID(scanResult.BSSID);
-                wifiAccessPoints[i].setLevel(scanResult.level);
-                wifiAccessPoints[i].setFrequency(scanResult.frequency);
-            }
-            boolean isWifiBasedIndoorLocationEnabled = sharedPreferences.getBoolean("wifi_indoor_location", true);
+            WifiAccessPoint filteredWifiAccessPoints[] =
+                    wifiFilter.filterWifiAccessPoints(parseScanResultsIntoWifiAccessPoints(scanResults));
             if(isWifiBasedIndoorLocationEnabled){
-                indoorLocation = indoorLocationCalculator.calculateIndoorLocationFromWifiAccessPointData(wifiAccessPoints);
+                indoorLocation = indoorLocationCalculator.calculateIndoorLocationFromWifiAccessPointData(filteredWifiAccessPoints);
             }
         }
+    }
+
+    private List<WifiAccessPoint> parseScanResultsIntoWifiAccessPoints(List<ScanResult> scanResults){
+        List<WifiAccessPoint> scannedFifiAccessPoints =  new ArrayList<>();
+        Collections.sort(scanResults, (o1, o2) -> Integer.compare(o2.level, o1.level));
+        for(ScanResult scanResult: scanResults){
+            WifiAccessPoint wifiAccessPoint = new WifiAccessPoint();
+            wifiAccessPoint.setSSID(scanResult.SSID);
+            wifiAccessPoint.setLevel(scanResult.level);
+            wifiAccessPoint.setFrequency(scanResult.frequency);
+            scannedFifiAccessPoints.add(wifiAccessPoint);
+        }
+        return  scannedFifiAccessPoints;
     }
 
     @Override
