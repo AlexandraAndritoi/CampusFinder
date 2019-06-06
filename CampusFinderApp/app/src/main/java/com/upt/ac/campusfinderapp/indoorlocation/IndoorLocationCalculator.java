@@ -27,46 +27,29 @@ class IndoorLocationCalculator {
     }
 
     IndoorLocation calculateIndoorLocationFromWifiAccessPointData(WifiAccessPoint[] wifiAccessPoints) {
-        List<WifiAccessPoint> accessPoints = WifiAccessPointRepository.getInstance().getWifiAccessPoints();
-        for(WifiAccessPoint accessPoint: accessPoints) {
-            for(WifiAccessPoint wap: wifiAccessPoints){
-                if(wap.getSSID().equals(accessPoint.getSSID())){
-                    wap.setLatitude(accessPoint.getLatitude());
-                    wap.setLongitude(accessPoint.getLongitude());
-                }
-            }
+        if(wifiAccessPoints.length < 3){
+            return null;
         }
-        WifiAccessPoint wap1 = wifiAccessPoints[0];
-        WifiAccessPoint wap2 = wifiAccessPoints[1];
-        WifiAccessPoint wap3 = wifiAccessPoints[2];
-        double distance1 = calculateDistanceFromDeviceToWifiAccessPoint(wap1.getLevel(), wap1.getFrequency());
-        double distance2 = calculateDistanceFromDeviceToWifiAccessPoint(wap2.getLevel(), wap2.getFrequency());
-        double distance3 = calculateDistanceFromDeviceToWifiAccessPoint(wap3.getLevel(), wap3.getFrequency());
+        double distance1 = calculateDistanceFromDeviceToWifiAccessPoint(wifiAccessPoints[0].getLevel(), wifiAccessPoints[0].getFrequency());
+        double distance2 = calculateDistanceFromDeviceToWifiAccessPoint(wifiAccessPoints[1].getLevel(), wifiAccessPoints[1].getFrequency());
+        double distance3 = calculateDistanceFromDeviceToWifiAccessPoint(wifiAccessPoints[2].getLevel(), wifiAccessPoints[2].getFrequency());
         Location location =
-                trilateration(wap1.getLatitude(), wap1.getLongitude(), distance1,
-                        wap2.getLatitude(), wap2.getLongitude(), distance2,
-                        wap3.getLatitude(), wap3.getLongitude(), distance3);
+                trilateration(wifiAccessPoints[0].getLatitude(), wifiAccessPoints[0].getLongitude(), distance1,
+                              wifiAccessPoints[1].getLatitude(), wifiAccessPoints[1].getLongitude(), distance2,
+                              wifiAccessPoints[2].getLatitude(), wifiAccessPoints[2].getLongitude(), distance3);
 //        Location location =
 //                trilateration(45.774124, 21.245351, 5,
 //                        45.774098, 21.245438, 5,
 //                        45.774022, 21.245366, 6);
-//        IndoorLocation indoorLocation = calculateIndoorLocation(wap1.getLatitude(), wap1.getLongitude(), distance1);
-        IndoorLocation indoorLocation = new IndoorLocation(location, 4.0);
+        IndoorLocation indoorLocation = new IndoorLocation(location, wifiAccessPoints[0].getFloor());
         FileWriter fileWriter = new FileWriter(context);
-        //fileWriter.writeToExternalStorage(wap1, indoorLocation, distance1);
         fileWriter.writeToExternalStorage(wifiAccessPoints, indoorLocation, new double[]{distance1, distance2, distance3});
         return indoorLocation;
     }
 
     private double calculateDistanceFromDeviceToWifiAccessPoint(int signalLevelInDb, int freqInMHz){
         double exp = (27.55 - (20 * Math.log10(freqInMHz)) + Math.abs(signalLevelInDb)) / 20.0;
-        return Math.pow(10.0, exp);
-    }
-
-    private IndoorLocation calculateIndoorLocation(double latitude, double longitude, double distance) {
-        Double newLatitude = latitude + (distance * K);
-        Double newLongitude = longitude + (distance * K) / Math.cos(newLatitude * (Math.PI / 180));
-        return new IndoorLocation(WifiIndoorLocationProvider.class.getName(), newLatitude, newLongitude, 0.0, System.currentTimeMillis());
+        return Math.pow(10.0, exp);     //meters
     }
 
     private Location trilateration(double p1x, double p1y, double d1,
@@ -106,9 +89,5 @@ class IndoorLocationCalculator {
         location.setLongitude(longitude);
 
         return location;
-    }
-
-    private double distance(Location x, Location y){
-        return x.distanceTo(y);
     }
 }
