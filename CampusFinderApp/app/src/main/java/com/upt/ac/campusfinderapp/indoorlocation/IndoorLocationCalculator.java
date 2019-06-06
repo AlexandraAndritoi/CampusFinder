@@ -25,7 +25,7 @@ class IndoorLocationCalculator {
     }
 
     IndoorLocation calculateIndoorLocationFromWifiAccessPointData(WifiAccessPoint[] wifiAccessPoints) {
-        if(wifiAccessPoints.length < 3){
+        if(wifiAccessPoints == null || wifiAccessPoints.length < 3){
             return null;
         }
         double distance1 = calculateDistanceFromDeviceToWifiAccessPoint(wifiAccessPoints[0].getLevel(), wifiAccessPoints[0].getFrequency());
