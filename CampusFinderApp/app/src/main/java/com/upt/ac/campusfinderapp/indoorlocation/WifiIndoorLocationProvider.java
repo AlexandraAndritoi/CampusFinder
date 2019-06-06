@@ -8,9 +8,8 @@ import android.preference.PreferenceManager;
 import com.navisens.motiondnaapi.WifiScanner;
 import com.upt.ac.campusfinderapp.model.WifiAccessPoint;
 import com.upt.ac.campusfinderapp.utils.WifiFilter;
+import com.upt.ac.campusfinderapp.utils.WifiParser;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import io.indoorlocation.core.IndoorLocation;
@@ -36,27 +35,17 @@ public class WifiIndoorLocationProvider extends IndoorLocationProvider implement
     @Override
     public void onScanResult(List<ScanResult> scanResults) {
         boolean isWifiBasedIndoorLocationEnabled = sharedPreferences.getBoolean("wifi_indoor_location", true);
+        if(!isWifiBasedIndoorLocationEnabled){
+            return;
+        }
+        if(scanResults == null || scanResults.size() == 0){
+            return;
+        }
         WifiFilter wifiFilter = new WifiFilter();
-        if(scanResults != null && scanResults.size()>0){
-            WifiAccessPoint filteredWifiAccessPoints[] =
-                    wifiFilter.filterWifiAccessPoints(parseScanResultsIntoWifiAccessPoints(scanResults));
-            if(isWifiBasedIndoorLocationEnabled){
-                indoorLocation = indoorLocationCalculator.calculateIndoorLocationFromWifiAccessPointData(filteredWifiAccessPoints);
-            }
-        }
-    }
-
-    private List<WifiAccessPoint> parseScanResultsIntoWifiAccessPoints(List<ScanResult> scanResults){
-        List<WifiAccessPoint> scannedFifiAccessPoints =  new ArrayList<>();
-        Collections.sort(scanResults, (o1, o2) -> Integer.compare(o2.level, o1.level));
-        for(ScanResult scanResult: scanResults){
-            WifiAccessPoint wifiAccessPoint = new WifiAccessPoint();
-            wifiAccessPoint.setSSID(scanResult.SSID);
-            wifiAccessPoint.setLevel(scanResult.level);
-            wifiAccessPoint.setFrequency(scanResult.frequency);
-            scannedFifiAccessPoints.add(wifiAccessPoint);
-        }
-        return  scannedFifiAccessPoints;
+        WifiParser wifiParser = new WifiParser();
+        WifiAccessPoint[] filteredWifiAccessPoints =
+                wifiFilter.filterWifiAccessPoints(wifiParser.parseScanResultsIntoWifiAccessPoints(scanResults));
+        indoorLocation = indoorLocationCalculator.calculateIndoorLocationFromWifiAccessPointData(filteredWifiAccessPoints);
     }
 
     @Override

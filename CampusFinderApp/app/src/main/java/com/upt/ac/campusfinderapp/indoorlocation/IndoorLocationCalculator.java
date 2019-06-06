@@ -7,12 +7,10 @@ import com.lemmingapex.trilateration.NonLinearLeastSquaresSolver;
 import com.lemmingapex.trilateration.TrilaterationFunction;
 import com.upt.ac.campusfinderapp.model.WifiAccessPoint;
 import com.upt.ac.campusfinderapp.utils.FileWriter;
-import com.upt.ac.campusfinderapp.utils.WifiAccessPointRepository;
 
 import org.apache.commons.math3.fitting.leastsquares.LeastSquaresOptimizer;
 import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer;
 
-import java.util.List;
 import io.indoorlocation.core.IndoorLocation;
 
 
