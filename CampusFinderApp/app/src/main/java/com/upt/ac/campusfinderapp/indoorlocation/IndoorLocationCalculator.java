@@ -25,7 +25,7 @@ class IndoorLocationCalculator {
     }
 
     IndoorLocation calculateIndoorLocationFromWifiAccessPointData(WifiAccessPoint[] wifiAccessPoints) {
-        if(wifiAccessPoints == null || wifiAccessPoints.length < 3){
+        if(IsOneWifiAccessPointNull(wifiAccessPoints)){
             return null;
         }
         double distance1 = calculateDistanceFromDeviceToWifiAccessPoint(wifiAccessPoints[0].getLevel(), wifiAccessPoints[0].getFrequency());
@@ -87,5 +87,14 @@ class IndoorLocationCalculator {
         location.setLongitude(longitude);
 
         return location;
+    }
+
+    private boolean IsOneWifiAccessPointNull(WifiAccessPoint[] wifiAccessPoints){
+        for(WifiAccessPoint wifiAccessPoint: wifiAccessPoints){
+            if(wifiAccessPoint == null){
+                return true;
+            }
+        }
+        return false;
     }
 }
