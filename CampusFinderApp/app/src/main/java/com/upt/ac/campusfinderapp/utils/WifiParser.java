@@ -15,6 +15,7 @@ public class WifiParser {
         for(ScanResult scanResult: scanResults){
             WifiAccessPoint wifiAccessPoint = new WifiAccessPoint();
             wifiAccessPoint.setSSID(scanResult.SSID);
+            wifiAccessPoint.setBSSID(scanResult.BSSID);
             wifiAccessPoint.setLevel(scanResult.level);
             wifiAccessPoint.setFrequency(scanResult.frequency);
             scannedFifiAccessPoints.add(wifiAccessPoint);

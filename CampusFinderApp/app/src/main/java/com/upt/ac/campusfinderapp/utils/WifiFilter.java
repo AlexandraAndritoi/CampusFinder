@@ -12,7 +12,8 @@ public class WifiFilter {
         List<WifiAccessPoint> databaseWifiAccessPoints = WifiAccessPointRepository.getInstance().getWifiAccessPoints();
         for(WifiAccessPoint scannedWifiAccessPoint : scannedWifiAccessPoints) {
             for (WifiAccessPoint databaseWifiAccessPoint : databaseWifiAccessPoints) {
-                if (scannedWifiAccessPoint.getSSID().equals(databaseWifiAccessPoint.getSSID()) && i < 3) {
+                if (scannedWifiAccessPoint.getSSID().equals(databaseWifiAccessPoint.getSSID())
+                        && scannedWifiAccessPoint.getBSSID().equals(databaseWifiAccessPoint.getBSSID()) && i < 3) {
                     scannedWifiAccessPoint.setLatitude(databaseWifiAccessPoint.getLatitude());
                     scannedWifiAccessPoint.setLongitude(databaseWifiAccessPoint.getLongitude());
                     scannedWifiAccessPoint.setFloor(databaseWifiAccessPoint.getFloor());
