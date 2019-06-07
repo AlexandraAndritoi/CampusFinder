@@ -56,6 +56,8 @@ public class MenuActivity extends AppCompatActivity
     private NavisensIndoorLocationProvider navisensIndoorLocationProvider;
     private WifiIndoorLocationProvider wifiIndoorLocationProvider;
 
+    private boolean isMapwizePluginLocationProviderSet = false;
+
     private static final int REQUEST_LOCATION_PERMISSION = 1;
 
     @Override
@@ -146,8 +148,13 @@ public class MenuActivity extends AppCompatActivity
             logOut();
         }
 
+        if(isMapwizePluginLocationProviderSet){
+            mapwizePlugin.removeLocationProvider();
+        }
+
         if(fragment != null) {
             startFragment();
+            isMapwizePluginLocationProviderSet = false;
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -241,6 +248,7 @@ public class MenuActivity extends AppCompatActivity
         manualIndoorLocationProvider = new ManualIndoorLocationProvider();
         navisensIndoorLocationProvider = new NavisensIndoorLocationProvider(this, CampusFinderApplication.NAVISENS_API_KEY, manualIndoorLocationProvider);
         mapwizePlugin.setLocationProvider(navisensIndoorLocationProvider);
+        isMapwizePluginLocationProviderSet = true;
     }
 
     private void locateDeviceWithWifiBasedIndoorLocation(){
@@ -248,6 +256,8 @@ public class MenuActivity extends AppCompatActivity
             manualIndoorLocationProvider.dispatchIndoorLocationChange(wifiIndoorLocationProvider.getIndoorLocation());
         }
     }
+
+
 
     @Override
     public void onFollowUserButtonClickWithoutLocation() {
