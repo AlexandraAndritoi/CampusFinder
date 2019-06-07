@@ -2,9 +2,11 @@ package com.upt.ac.campusfinderapp.menu;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -252,12 +254,19 @@ public class MenuActivity extends AppCompatActivity
     }
 
     private void locateDeviceWithWifiBasedIndoorLocation(){
-        if(wifiIndoorLocationProvider.getIndoorLocation()!= null){
+        if(isWifiIndoorLocationenabled() && isIndoorLocationAvailable()){
             manualIndoorLocationProvider.dispatchIndoorLocationChange(wifiIndoorLocationProvider.getIndoorLocation());
         }
     }
 
+    private boolean isIndoorLocationAvailable(){
+        return wifiIndoorLocationProvider.getIndoorLocation()!= null;
+    }
 
+    private boolean isWifiIndoorLocationenabled(){
+        boolean b = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("wifi_indoor_location", true);
+        return b;
+    }
 
     @Override
     public void onFollowUserButtonClickWithoutLocation() {
