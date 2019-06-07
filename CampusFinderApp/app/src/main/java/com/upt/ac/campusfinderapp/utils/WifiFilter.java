@@ -12,8 +12,7 @@ public class WifiFilter {
         List<WifiAccessPoint> databaseWifiAccessPoints = WifiAccessPointRepository.getInstance().getWifiAccessPoints();
         for(WifiAccessPoint scannedWifiAccessPoint : scannedWifiAccessPoints) {
             for (WifiAccessPoint databaseWifiAccessPoint : databaseWifiAccessPoints) {
-                if (scannedWifiAccessPoint.getSSID().equals(databaseWifiAccessPoint.getSSID())
-                        && scannedWifiAccessPoint.getBSSID().equals(databaseWifiAccessPoint.getBSSID()) && i < 3) {
+                if (areWifiAccessPointsMatching(scannedWifiAccessPoint, databaseWifiAccessPoint) && i < 3) {
                     scannedWifiAccessPoint.setLatitude(databaseWifiAccessPoint.getLatitude());
                     scannedWifiAccessPoint.setLongitude(databaseWifiAccessPoint.getLongitude());
                     scannedWifiAccessPoint.setFloor(databaseWifiAccessPoint.getFloor());
@@ -22,5 +21,10 @@ public class WifiFilter {
             }
         }
         return filteredWifiAccessPoints;
+    }
+
+    private boolean areWifiAccessPointsMatching(WifiAccessPoint scannedWifiAccessPoint, WifiAccessPoint databaseWifiAccessPoint){
+        return scannedWifiAccessPoint.getSSID().equals(databaseWifiAccessPoint.getSSID())
+                && scannedWifiAccessPoint.getBSSID().equals(databaseWifiAccessPoint.getBSSID());
     }
 }
