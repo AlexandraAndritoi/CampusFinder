@@ -264,8 +264,7 @@ public class MenuActivity extends AppCompatActivity
     }
 
     private boolean isWifiIndoorLocationenabled(){
-        boolean b = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("wifi_indoor_location", true);
-        return b;
+        return PreferenceManager.getDefaultSharedPreferences(this).getBoolean("wifi_indoor_location", true);
     }
 
     @Override
