@@ -46,7 +46,7 @@ class IndoorLocationCalculator {
     }
 
     private double calculateDistanceFromDeviceToWifiAccessPoint(int signalLevelInDb, int freqInMHz){
-        double exp = (27.55 - (20 * Math.log10(freqInMHz)) + Math.abs(signalLevelInDb)) / 20.0;
+        double exp = signalLevelInDb - 27.55 - (20 * Math.log10(freqInMHz))/20;
         return Math.pow(10.0, exp);     //meters
     }
 
