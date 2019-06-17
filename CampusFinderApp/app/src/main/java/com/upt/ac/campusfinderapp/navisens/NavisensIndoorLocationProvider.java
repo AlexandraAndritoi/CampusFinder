@@ -124,7 +124,7 @@ public class NavisensIndoorLocationProvider extends IndoorLocationProvider imple
 
     @Override
     public void stop() {
-
+        mMotionDna.stop();
     }
 
     @Override
